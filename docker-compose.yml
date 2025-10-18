@@ -29,11 +29,11 @@ services:
     container_name: mnr-client-backend
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      - "3001:3001"
     environment:
       - DATABASE_URL=postgresql://mnr_user:mnr_password@postgres:5432/mnr_client_intake
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3001
       - CORS_ORIGIN=http://localhost:3000
     depends_on:
       postgres:
