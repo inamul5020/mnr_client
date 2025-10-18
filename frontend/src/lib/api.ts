@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { ClientIntake, ApiResponse, PaginatedResponse } from '../types';
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+  (window.location.hostname === 'client.mnrlk.com' ? 'https://api.mnrlk.com' : 'http://localhost:3001');
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
@@ -35,7 +36,20 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('Response error:', error.response?.data || error.message);
+    console.error('API Error:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message
+    });
+    
+    // Handle specific error cases
+    if (error.code === 'ERR_NETWORK') {
+      console.error('Network Error: Cannot connect to backend API at', API_BASE_URL);
+    }
+    
     return Promise.reject(error);
   }
 );

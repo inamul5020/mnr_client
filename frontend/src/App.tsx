@@ -4,6 +4,7 @@ import { AdminDashboard } from './pages/AdminDashboard'
 import { SuccessPage } from './pages/SuccessPage'
 import { LoginForm } from './components/LoginForm'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { HealthCheck } from './components/HealthCheck'
 import { LogOut, User } from 'lucide-react'
 
 // Protected Route Component
@@ -65,6 +66,7 @@ function App() {
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-gray-50">
+          <HealthCheck />
           <Routes>
             <Route path="/login" element={<LoginForm />} />
             <Route path="/*" element={
