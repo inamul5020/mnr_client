@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Main Client Intake Record
+model ClientIntake {
+  id          String   @id @default(cuid())
+  
+  // Section A - Organization Details
+  legalName   String
+  tradeName   String?
+  type        ClientType
+  ownerName   String
+  address     String
+  city        String?
+  state       String?
+  zipCode     String?
+  country     String?
+  phoneMobile String
+  phoneLand   String?
+  email       String
+  website     String?
+  natureOfBusiness String
+  industry    String?
+  clientPriority ClientPriority @default(MEDIUM)
+  
+  // Section B - Services
+  servicesSelected String[] // Array of selected services
+  serviceFrequency String? // Monthly/Quarterly/Annual
+  tin             String?
+  
+  // Section C - Tax Profile
+  taxTypesSelected String[] // Array of tax types
+  otherRegistrations String?
+  
+  // Section D - Related Parties & Company Details
+  companySecretary String?
+  registrationNumber String?
+  incorporationDate DateTime?
+  annualRevenue   Decimal? @db.Decimal(15, 2)
+  employeeCount   Int?
+  
+  // Section E - RAMIS & Documents
+  ramisStatus     RamisStatus
+  ramisEmail      String?
+  docsBusinessReg Boolean @default(false)
+  docsDeed        Boolean @default(false)
+  docsVehicleReg  Boolean @default(false)
+  docsOther1      String?
+  docsOther2      String?
+  complianceNotes String?
+  
+  // Financial Terms (Section F)
+  creditLimit     Decimal? @db.Decimal(15, 2)
+  paymentTerms    String?
+  preferredCurrency String? @default("USD")
+  
+  // Metadata
+  notes           String? @db.Text
+  consent         Boolean
+  submittedAt     DateTime @default(now())
+  createdBy       String? // Staff member who created this record
+  updatedBy       String? // Staff member who last updated this record
+  deletedBy       String? // Staff member who deleted this record
+  deletedAt       DateTime? // When this record was deleted
+  
+  // Relations
+  relatedParties  RelatedParty[]
+  auditLogs       AuditLog[]
+  
+  @@map("client_intakes")
+}
+
+// Related Parties (Directors, Partners, etc.)
+model RelatedParty {
+  id          String   @id @default(cuid())
+  clientIntakeId String
+  name        String
+  relationship String
+  tin         String?
+  email       String?
+  phone       String?
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  clientIntake ClientIntake @relation(fields: [clientIntakeId], references: [id], onDelete: Cascade)
+  
+  @@map("related_parties")
+}
+
+// Enums
+enum ClientType {
+  INDIVIDUAL
+  PARTNERSHIP
+  COMPANY
+  NGO
+  OTHER
+}
+
+enum ClientPriority {
+  LOW
+  MEDIUM
+  HIGH
+  VIP
+}
+
+enum RamisStatus {
+  AVAILABLE
+  NOT_AVAILABLE
+}
+
+// User Management
+model User {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  password    String
+  fullName    String
+  role        UserRole @default(STAFF)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  auditLogs   AuditLog[]
+  
+  @@map("users")
+}
+
+// Audit Logging
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      AuditAction
+  entityType  String   // "ClientIntake", "User", etc.
+  entityId    String
+  oldValues   Json?
+  newValues   Json?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  clientIntakeId String?
+  clientIntake ClientIntake? @relation(fields: [clientIntakeId], references: [id])
+  timestamp   DateTime @default(now())
+  ipAddress   String?
+  userAgent   String?
+  
+  @@map("audit_logs")
+}
+
+// Enums for new models
+enum UserRole {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  EXPORT
+}
