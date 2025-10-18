@@ -34,7 +34,8 @@ services:
       - DATABASE_URL=postgresql://mnr_user:mnr_password@postgres:5432/mnr_client_intake
       - NODE_ENV=production
       - PORT=3001
-      - CORS_ORIGIN=http://localhost:3000
+      - CORS_ORIGIN=https://client.mnrlk.com
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,7 +52,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - VITE_API_URL=http://localhost:3001
+      - VITE_API_URL=https://api.mnrlk.com
     depends_on:
       - backend
     labels:
