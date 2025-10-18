@@ -177,6 +177,161 @@ router.post('/', validateIntake, authenticateUser, async (req: AuthenticatedRequ
   }
 });
 
+// PUT /api/intake/:id - Update client intake (requires authentication)
+router.put('/:id', validateIntake, authenticateUser, async (req: AuthenticatedRequest, res: any) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { id } = req.params;
+    const {
+      // Section A
+      legalName, tradeName, type, ownerName, address, city, state, zipCode, country,
+      phoneMobile, phoneLand, email, website, natureOfBusiness, industry, clientPriority,
+      
+      // Section B
+      servicesSelected, serviceFrequency, tin,
+      
+      // Section C
+      taxTypesSelected, otherRegistrations,
+      
+      // Section D
+      companySecretary, registrationNumber, incorporationDate, annualRevenue, employeeCount,
+      
+      // Section E
+      ramisStatus, ramisEmail, docsBusinessReg, docsDeed, docsVehicleReg, docsOther1, docsOther2, complianceNotes,
+      
+      // Section F
+      creditLimit, paymentTerms, preferredCurrency,
+      
+      // Metadata
+      notes, consent, relatedParties
+    } = req.body;
+
+    // Check if client intake exists
+    const existingClient = await prisma.clientIntake.findUnique({
+      where: { id },
+      include: { relatedParties: true }
+    });
+
+    if (!existingClient) {
+      return res.status(404).json({ error: 'Client intake not found' });
+    }
+
+    // Additional validation
+    if (type === 'COMPANY' && !companySecretary) {
+      return res.status(400).json({ error: 'Company Secretary is required for Company type' });
+    }
+
+    const isTaxServiceSelected = servicesSelected?.includes('Direct Tax') || servicesSelected?.includes('Indirect Tax');
+    if (isTaxServiceSelected && !tin) {
+      return res.status(400).json({ error: 'TIN is required when tax services are selected' });
+    }
+
+    // Update client intake record
+    const updatedClientIntake = await prisma.clientIntake.update({
+      where: { id },
+      data: {
+        // Section A
+        legalName,
+        tradeName,
+        type,
+        ownerName,
+        address,
+        city,
+        state,
+        zipCode,
+        country,
+        phoneMobile,
+        phoneLand,
+        email,
+        website,
+        natureOfBusiness,
+        industry,
+        clientPriority: clientPriority || 'MEDIUM',
+        
+        // Section B
+        servicesSelected: servicesSelected || [],
+        serviceFrequency,
+        tin,
+        
+        // Section C
+        taxTypesSelected: taxTypesSelected || [],
+        otherRegistrations,
+        
+        // Section D
+        companySecretary,
+        registrationNumber,
+        incorporationDate: incorporationDate ? new Date(incorporationDate) : null,
+        annualRevenue: annualRevenue ? parseFloat(annualRevenue) : null,
+        employeeCount: employeeCount ? parseInt(employeeCount) : null,
+        
+        // Section E
+        ramisStatus,
+        ramisEmail,
+        docsBusinessReg: docsBusinessReg || false,
+        docsDeed: docsDeed || false,
+        docsVehicleReg: docsVehicleReg || false,
+        docsOther1,
+        docsOther2,
+        complianceNotes,
+        
+        // Section F
+        creditLimit: creditLimit ? parseFloat(creditLimit) : null,
+        paymentTerms,
+        preferredCurrency: preferredCurrency || 'USD',
+        
+        // Metadata
+        notes,
+        consent,
+        updatedBy: req.user?.username || 'unknown',
+        
+        // Related parties - delete existing and create new ones
+        relatedParties: {
+          deleteMany: {},
+          create: (relatedParties || []).map((party: any) => ({
+            name: party.name,
+            relationship: party.relationship,
+            tin: party.tin,
+            email: party.email,
+            phone: party.phone
+          }))
+        }
+      },
+      include: {
+        relatedParties: true
+      }
+    });
+
+    // Log audit action
+    await logAuditAction(
+      'UPDATE',
+      'ClientIntake',
+      id,
+      req.user?.id || 'unknown',
+      existingClient,
+      updatedClientIntake,
+      id,
+      req
+    );
+
+    res.json({
+      success: true,
+      message: 'Client intake updated successfully',
+      data: updatedClientIntake
+    });
+
+  } catch (error) {
+    console.error('Error updating client intake:', error);
+    res.status(500).json({
+      error: 'Failed to update client intake',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 // GET /api/intake - List all client intakes with filtering
 router.get('/', async (req, res) => {
   try {

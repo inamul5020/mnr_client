@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ClientIntake } from '../types';
 import { clientIntakeApi, exportApi, downloadFile } from '../lib/api';
-import { Search, Download, Trash2, RefreshCw, Eye } from 'lucide-react';
+import { Search, Download, Trash2, RefreshCw, Eye, Edit } from 'lucide-react';
 import { ClientDetailView } from '../components/ClientDetailView';
 
 export function AdminDashboard() {
@@ -10,6 +10,11 @@ export function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [selectedClient, setSelectedClient] = useState<ClientIntake | null>(null);
   const [showDetailView, setShowDetailView] = useState(false);
+  const [editingClient, setEditingClient] = useState<ClientIntake | null>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [deletePasscode, setDeletePasscode] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     search: '',
     type: '',
@@ -59,13 +64,49 @@ export function AdminDashboard() {
     setSelectedClient(null);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this client intake?')) return;
-    
+  const handleEditClient = (client: ClientIntake) => {
+    setEditingClient(client);
+    setShowEditForm(true);
+  };
+
+  const handleCloseEditForm = () => {
+    setShowEditForm(false);
+    setEditingClient(null);
+  };
+
+  const handleUpdateClient = async (updatedData: ClientIntake) => {
     try {
-      const response = await clientIntakeApi.delete(id);
+      if (!editingClient?.id) return;
+      
+      const response = await clientIntakeApi.update(editingClient.id, updatedData);
       if (response.success) {
         fetchData();
+        handleCloseEditForm();
+        setError(null);
+      } else {
+        setError('Failed to update client intake');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to update client intake');
+    }
+  };
+
+  const handleDeleteClick = (clientId: string) => {
+    setClientToDelete(clientId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!clientToDelete || !deletePasscode) return;
+
+    try {
+      const response = await clientIntakeApi.delete(clientToDelete, deletePasscode);
+      if (response.success) {
+        fetchData();
+        setShowDeleteModal(false);
+        setClientToDelete(null);
+        setDeletePasscode('');
+        setError(null);
       } else {
         setError('Failed to delete client intake');
       }
@@ -73,6 +114,13 @@ export function AdminDashboard() {
       setError(err.message || 'Failed to delete client intake');
     }
   };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setClientToDelete(null);
+    setDeletePasscode('');
+  };
+
 
   const handleExportExcel = async (id: string) => {
     try {
@@ -274,6 +322,13 @@ export function AdminDashboard() {
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
+                          onClick={() => handleEditClient(client)}
+                          className="text-green-600 hover:text-green-900"
+                          title="Edit"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => handleExportExcel(client.id!)}
                           className="text-primary-600 hover:text-primary-900"
                           title="Export Excel"
@@ -288,7 +343,7 @@ export function AdminDashboard() {
                           <Download className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(client.id!)}
+                          onClick={() => handleDeleteClick(client.id!)}
                           className="text-red-600 hover:text-red-900"
                           title="Delete"
                         >
@@ -368,6 +423,85 @@ export function AdminDashboard() {
           isOpen={showDetailView}
           onClose={handleCloseDetailView}
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 flex justify-center items-center p-4">
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Confirm Delete
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to delete this client intake? This action cannot be undone.
+              </p>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Enter delete passcode:
+                </label>
+                <input
+                  type="password"
+                  value={deletePasscode}
+                  onChange={(e) => setDeletePasscode(e.target.value)}
+                  className="input w-full"
+                  placeholder="MNR_DELETE_2024"
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={handleDeleteCancel}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  disabled={!deletePasscode}
+                  className="btn bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Form Modal */}
+      {editingClient && showEditForm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 flex justify-center items-center p-4">
+          <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">Edit Client: {editingClient.legalName}</h2>
+              <button onClick={handleCloseEditForm} className="text-gray-500 hover:text-gray-700">
+                <span className="sr-only">Close</span>
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6">
+              <p className="text-gray-600 mb-4">
+                Edit functionality will be implemented here. For now, you can view the client details.
+              </p>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={handleCloseEditForm}
+                  className="btn btn-secondary"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => handleUpdateClient(editingClient)}
+                  className="btn btn-primary"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

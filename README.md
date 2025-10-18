@@ -14,6 +14,8 @@ A comprehensive client intake management system for MNR Associates, built with R
 ### Admin Dashboard
 - **Client Management** - View, search, and filter clients
 - **Detailed View** - Complete client information modal
+- **Edit Functionality** - Update client information with full form validation
+- **Delete Protection** - Passcode-protected deletion with soft delete
 - **Export Functionality** - Excel and CSV export options
 - **User Authentication** - Role-based access control
 - **Audit Logging** - Complete action tracking
@@ -199,8 +201,9 @@ model AuditLog {
 
 ### Client Intake
 - `POST /api/intake` - Submit client intake (requires auth)
-- `GET /api/intake` - List client intakes
+- `GET /api/intake` - List client intakes with filtering
 - `GET /api/intake/:id` - Get specific client intake
+- `PUT /api/intake/:id` - Update client intake (requires auth)
 - `DELETE /api/intake/:id` - Delete client intake (requires auth + passcode)
 
 ### Export

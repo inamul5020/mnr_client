@@ -5,6 +5,26 @@ All notable changes to the MNR Client Intake System will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-10-18
+
+### Fixed
+- **Form Submission** - Fixed form submission issues in frontend
+- **Delete Functionality** - Fixed 400 error on delete operations by properly sending passcode in request body
+- **API Client** - Updated delete function to require passcode parameter
+- **CRUD Operations** - All CRUD operations now working correctly
+
+### Added
+- **Edit Functionality** - Added edit button and update capability for client records
+- **PUT API Endpoint** - New PUT /api/intake/:id endpoint for updating client intakes
+- **Delete Confirmation Modal** - Passcode-protected delete confirmation dialog
+- **Edit Form Modal** - Modal for editing client information (basic implementation)
+- **Enhanced Error Handling** - Better error messages and validation
+
+### Updated
+- **Admin Dashboard** - Added edit and improved delete functionality
+- **API Documentation** - Updated to include PUT endpoint and fixed delete documentation
+- **Frontend API Client** - Enhanced with update and improved delete functions
+
 ## [1.0.0] - 2025-10-18
 
 ### Added

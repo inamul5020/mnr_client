@@ -69,9 +69,17 @@ export const clientIntakeApi = {
     return response.data;
   },
 
+  // Update client intake
+  update: async (id: string, data: Partial<ClientIntake>): Promise<ApiResponse<ClientIntake>> => {
+    const response = await api.put(`/intake/${id}`, data);
+    return response.data;
+  },
+
   // Delete client intake
-  delete: async (id: string): Promise<ApiResponse<void>> => {
-    const response = await api.delete(`/intake/${id}`);
+  delete: async (id: string, passcode: string): Promise<ApiResponse<void>> => {
+    const response = await api.delete(`/intake/${id}`, {
+      data: { passcode }
+    });
     return response.data;
   }
 };

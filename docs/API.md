@@ -201,6 +201,43 @@ Get specific client intake by ID.
 }
 ```
 
+#### PUT /intake/:id
+Update client intake (requires authentication).
+
+**Request Body:**
+```json
+{
+  "legalName": "Updated ABC Company Ltd",
+  "tradeName": "Updated ABC Co",
+  "type": "COMPANY",
+  "ownerName": "Updated John Smith",
+  "address": "456 Updated Business Street, Colombo 03",
+  "phoneMobile": "+94 77 123 4567",
+  "email": "updatedjohn@abccompany.com",
+  "natureOfBusiness": "Updated Software development",
+  "servicesSelected": ["Direct Tax", "Indirect Tax", "HR Services"],
+  "tin": "123456789V",
+  "companySecretary": "Updated Secretary",
+  "ramisStatus": "AVAILABLE",
+  "consent": true
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Client intake updated successfully",
+  "data": {
+    "id": "cmgw2kyu90008o701ln9ocklm",
+    "legalName": "Updated ABC Company Ltd",
+    "updatedBy": "admin",
+    "submittedAt": "2025-10-18T09:23:02.625Z",
+    "relatedParties": [...]
+  }
+}
+```
+
 #### DELETE /intake/:id
 Delete client intake (requires authentication + passcode).
 

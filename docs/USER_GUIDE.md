@@ -170,6 +170,12 @@ The admin dashboard provides comprehensive client management capabilities for au
 2. View complete client information in a detailed modal
 3. Close the modal when finished
 
+**Edit Client:**
+1. Click the **✏️ (edit) icon** in the Actions column
+2. Modify client information in the edit modal
+3. Click "Save Changes" to update
+4. Changes will be logged in the audit trail
+
 **Export Data:**
 1. Click the **📥 (download) icon** for Excel export
 2. Click the **📄 (document) icon** for CSV export
@@ -178,7 +184,7 @@ The admin dashboard provides comprehensive client management capabilities for au
 **Delete Record:**
 1. Click the **🗑️ (trash) icon** in the Actions column
 2. Enter the delete passcode: `MNR_DELETE_2024`
-3. Confirm deletion
+3. Click "Delete" to confirm
 4. Record will be soft-deleted (preserved for audit)
 
 ### Detailed Client View
