@@ -9,15 +9,25 @@ RUN apk add --no-cache git
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies with better error handling
-RUN npm ci --no-audit --no-fund --prefer-offline || \
-    (rm -rf node_modules package-lock.json && npm install --no-audit --no-fund)
+# Clear npm cache and install dependencies
+RUN npm cache clean --force && \
+    npm install --no-audit --no-fund --prefer-offline
 
 # Copy source code
 COPY . .
 
-# Verify build tools are available
-RUN which npm && npm --version && node --version
+# Set environment variables for build
+ENV NODE_ENV=production
+ENV VITE_API_URL=https://api.mnrlk.com
+
+# Verify installation and build tools
+RUN echo "=== Build Environment ===" && \
+    node --version && \
+    npm --version && \
+    which tsc && \
+    which vite && \
+    npm list typescript vite @vitejs/plugin-react && \
+    echo "=== Starting Build ==="
 
 # Build the application
 RUN npm run build

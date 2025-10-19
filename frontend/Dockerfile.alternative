@@ -1,0 +1,58 @@
+# Alternative Dockerfile for Coolify deployment
+# This version uses a different approach to handle potential build issues
+
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache git python3 make g++
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies with verbose output
+RUN npm install --verbose --no-audit --no-fund
+
+# Copy source code
+COPY . .
+
+# Set build environment
+ENV NODE_ENV=production
+ENV VITE_API_URL=https://api.mnrlk.com
+
+# Debug build environment
+RUN echo "=== Build Environment Debug ===" && \
+    node --version && \
+    npm --version && \
+    ls -la /app && \
+    ls -la /app/node_modules/.bin/ | head -10 && \
+    echo "=== Package.json scripts ===" && \
+    cat package.json | grep -A 10 '"scripts"' && \
+    echo "=== Available npm scripts ===" && \
+    npm run && \
+    echo "=== End Debug ==="
+
+# Try building with explicit paths
+RUN npx tsc --version && npx vite --version
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Copy built application
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]
