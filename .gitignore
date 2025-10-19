@@ -12,7 +12,7 @@ yarn-error.log*
 .env.production.local
 
 # Build outputs
-dist/
+# # dist  # Commented out for static deployment/  # Commented out for static deployment
 build/
 .next/
 out/
@@ -68,7 +68,7 @@ jspm_packages/
 .nuxt
 
 # vuepress build output
-.vuepress/dist
+.vuepress/# dist  # Commented out for static deployment
 
 # Serverless directories
 .serverless
@@ -169,7 +169,7 @@ storybook-static/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist  # Commented out for static deployment
 
 # Gatsby files
 .cache/
@@ -273,7 +273,7 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist  # Commented out for static deployment
 
 # Gatsby files
 .cache/
@@ -282,7 +282,7 @@ dist
 # public
 
 # vuepress build output
-.vuepress/dist
+.vuepress/# dist  # Commented out for static deployment
 
 # Serverless directories
 .serverless/
