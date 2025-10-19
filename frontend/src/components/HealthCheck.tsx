@@ -14,10 +14,16 @@ export function HealthCheck() {
         
         setApiUrl(API_BASE_URL);
         
-        const response = await fetch(`${API_BASE_URL}/api/health`);
+        const response = await fetch(`${API_BASE_URL}/health`);
         
         if (response.ok) {
-          setStatus('healthy');
+          const data = await response.json();
+          if (data.status === 'OK') {
+            setStatus('healthy');
+          } else {
+            setStatus('error');
+            setError(`API returned: ${data.status}`);
+          }
         } else {
           setStatus('error');
           setError(`HTTP ${response.status}: ${response.statusText}`);
