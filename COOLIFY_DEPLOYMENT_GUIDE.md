@@ -44,26 +44,33 @@
 
 ### Step 3: Environment Variables
 
-**Backend Environment Variables:**
+**🎉 Good News: Most variables are hardcoded with sensible defaults!**
+
+**Only ONE variable REQUIRES manual entry:**
 ```bash
-DATABASE_URL=postgresql://mnr_user:mnr_password@postgres:5432/mnr_client_intake
-NODE_ENV=production
-PORT=3001
-CORS_ORIGIN=https://client.mnrlk.com
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 ```
 
-**Frontend Environment Variables:**
+**Optional variables (have defaults):**
 ```bash
-VITE_API_URL=https://api.mnrlk.com
-```
-
-**Database Environment Variables:**
-```bash
+# Database (optional - defaults provided)
 POSTGRES_DB=mnr_client_intake
 POSTGRES_USER=mnr_user
 POSTGRES_PASSWORD=mnr_password
+
+# API URLs (optional - defaults provided)
+CORS_ORIGIN=https://client.mnrlk.com
+VITE_API_URL=https://api.mnrlk.com
+
+# Node config (optional - defaults provided)
+NODE_ENV=production
+PORT=3001
 ```
+
+**📝 How it works:**
+- All variables have sensible defaults (e.g., `${JWT_SECRET:-default-value}`)
+- You only need to set `JWT_SECRET` in Coolify
+- Everything else will use the defaults if not provided
 
 ## 🔧 Configuration Details
 
