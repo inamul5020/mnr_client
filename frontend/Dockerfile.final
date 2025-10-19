@@ -1,13 +1,10 @@
-# Ubuntu-based Dockerfile for better compatibility
-FROM node:18-bullseye
+# Final Dockerfile for Coolify - Simple and reliable
+FROM node:18-alpine
 
 WORKDIR /app
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache git python3 make g++
 
 # Copy package files
 COPY package.json package-lock.json* ./
@@ -26,13 +23,13 @@ ENV VITE_API_URL=https://api.mnrlk.com
 RUN npm run build
 
 # Install nginx
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache nginx
 
 # Copy built files to nginx directory
-RUN cp -r dist/* /var/www/html/
+RUN mkdir -p /var/www/html && cp -r dist/* /var/www/html/
 
 # Copy nginx config
-COPY nginx.simple.conf /etc/nginx/sites-available/default
+COPY nginx.simple.conf /etc/nginx/http.d/default.conf
 
 # Expose port
 EXPOSE 80

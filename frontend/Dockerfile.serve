@@ -1,0 +1,32 @@
+# Serve static files with Node.js - Simplest approach
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache git
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm ci --no-audit --no-fund
+
+# Copy source code
+COPY . .
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV VITE_API_URL=https://api.mnrlk.com
+
+# Build the application
+RUN npm run build
+
+# Install serve package
+RUN npm install -g serve
+
+# Expose port
+EXPOSE 3000
+
+# Serve the built files
+CMD ["serve", "-s", "dist", "-l", "3000"]
