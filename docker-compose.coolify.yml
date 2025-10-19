@@ -53,7 +53,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.node18
+      dockerfile: Dockerfile.static
     container_name: mnr-client-frontend
     restart: unless-stopped
     expose:
