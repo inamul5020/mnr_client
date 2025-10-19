@@ -33,7 +33,8 @@ const connectWithRetry = async (retries = 10, delay = 5000) => {
       console.log('✅ Database connected successfully');
       return;
     } catch (error) {
-      console.log(`❌ Database connection attempt ${i + 1} failed:`, error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.log(`❌ Database connection attempt ${i + 1} failed:`, errorMessage);
       if (i === retries - 1) {
         console.error('❌ Failed to connect to database after all retries');
         throw error;
