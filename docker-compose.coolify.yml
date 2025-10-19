@@ -53,7 +53,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.static
+      dockerfile: Dockerfile.coolify
     container_name: mnr-client-frontend
     restart: unless-stopped
     expose:
