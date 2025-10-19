@@ -4,11 +4,7 @@ echo "🚀 Starting MNR Client Intake Backend..."
 
 # Wait for database to be ready
 echo "⏳ Waiting for database to be ready..."
-sleep 15
-
-# Test database connection first
-echo "🔄 Testing database connection..."
-npx prisma db push --accept-data-loss
+sleep 20
 
 # Generate Prisma client
 echo "🔄 Generating Prisma client..."

@@ -31,6 +31,25 @@ const connectWithRetry = async (retries = 10, delay = 5000) => {
     try {
       await prisma.$connect();
       console.log('✅ Database connected successfully');
+      
+      // Try to initialize database schema
+      try {
+        console.log('🔄 Initializing database schema...');
+        await prisma.$executeRaw`SELECT 1 FROM "ClientIntake" LIMIT 1`;
+        console.log('✅ Database schema already exists');
+      } catch (schemaError) {
+        console.log('🔄 Database schema not found, creating tables...');
+        const { execSync } = require('child_process');
+        try {
+          execSync('npx prisma db push --accept-data-loss', { stdio: 'inherit' });
+          console.log('✅ Database schema created successfully');
+        } catch (migrationError) {
+          const errorMessage = migrationError instanceof Error ? migrationError.message : 'Unknown error';
+          console.error('❌ Failed to create database schema:', errorMessage);
+          // Continue anyway, let the app start
+        }
+      }
+      
       return;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
