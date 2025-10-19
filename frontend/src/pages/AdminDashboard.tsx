@@ -544,6 +544,7 @@ export function AdminDashboard() {
               </button>
             </div>
             <div className="p-6">
+              {/* Comprehensive edit form with all client fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Section A - Organization Details */}
                 <div className="space-y-4">
