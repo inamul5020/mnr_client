@@ -1,0 +1,33 @@
+# Minimal backend Dockerfile - No database, just works
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache git
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy minimal backend
+COPY src/index-minimal.ts ./
+
+# Install TypeScript and ts-node for runtime
+RUN npm install -g typescript ts-node
+
+# Expose port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Start the minimal application
+CMD ["npx", "ts-node", "index-minimal.ts"]
