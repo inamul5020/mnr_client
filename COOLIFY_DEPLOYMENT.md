@@ -1,18 +1,26 @@
 # Coolify Deployment Configuration
 
-## Port Configuration
+## Port Configuration for Coolify
 
-### Backend Service
-- **Internal Port:** 3001
-- **External Port:** 3001 (or any available port)
+### Backend Service (API)
+- **Internal Port:** 3001 (exposed via `expose`)
+- **Coolify Port:** 3001 (configured via labels)
 - **Protocol:** HTTP
 - **Health Check:** `/health`
+- **Domain:** `api.mnrlk.com`
 
-### Frontend Service
-- **Internal Port:** 80
-- **External Port:** 80 (or any available port)
+### Frontend Service (Web App)
+- **Internal Port:** 80 (exposed via `expose`)
+- **Coolify Port:** 80 (configured via labels)
 - **Protocol:** HTTP
 - **Health Check:** `/`
+- **Domain:** `client.mnrlk.com`
+
+### Database Service
+- **Internal Port:** 5432
+- **Coolify Port:** 5432 (internal only)
+- **Protocol:** PostgreSQL
+- **Access:** Internal only (not exposed externally)
 
 ## Environment Variables
 
@@ -37,17 +45,66 @@ POSTGRES_USER=mnr_user
 POSTGRES_PASSWORD=mnr_password
 ```
 
-## Domain Configuration
+## Coolify Setup Instructions
 
-### Frontend Domain
+### Step 1: Create Applications in Coolify
+
+**1. Frontend Application:**
+- **Name:** `mnr-client-frontend`
+- **Type:** Docker Compose
+- **Repository:** `https://github.com/inamul5020/mnr_client.git`
+- **Branch:** `main`
+- **Docker Compose File:** `docker-compose.yml`
+- **Service:** `frontend`
+
+**2. Backend Application:**
+- **Name:** `mnr-client-backend`
+- **Type:** Docker Compose
+- **Repository:** `https://github.com/inamul5020/mnr_client.git`
+- **Branch:** `main`
+- **Docker Compose File:** `docker-compose.yml`
+- **Service:** `backend`
+
+**3. Database Application:**
+- **Name:** `mnr-client-db`
+- **Type:** Docker Compose
+- **Repository:** `https://github.com/inamul5020/mnr_client.git`
+- **Branch:** `main`
+- **Docker Compose File:** `docker-compose.yml`
+- **Service:** `postgres`
+
+### Step 2: Configure Domains
+
+**Frontend Domain:**
 - **Domain:** `client.mnrlk.com`
-- **Points to:** Frontend service (port 80)
-- **SSL:** Enable HTTPS
+- **Points to:** Frontend service
+- **Port:** 80 (Coolify will handle 80/443 mapping)
+- **SSL:** Enable HTTPS (Let's Encrypt)
 
-### Backend Domain
+**Backend Domain:**
 - **Domain:** `api.mnrlk.com`
-- **Points to:** Backend service (port 3001)
-- **SSL:** Enable HTTPS
+- **Points to:** Backend service
+- **Port:** 3001 (Coolify will handle 80/443 mapping)
+- **SSL:** Enable HTTPS (Let's Encrypt)
+
+### Step 3: Port Mapping in Coolify
+
+**Important:** Coolify handles port 80/443 automatically. You need to:
+
+1. **In Coolify Dashboard:**
+   - Go to your application settings
+   - Set **Port** to the internal container port (3001 for backend, 80 for frontend)
+   - Coolify will automatically map this to 80/443 externally
+
+2. **For Backend (api.mnrlk.com):**
+   - Internal Port: `3001`
+   - External Access: Coolify handles 80/443
+   - Health Check: `/health`
+
+3. **For Frontend (client.mnrlk.com):**
+   - Internal Port: `80`
+   - External Access: Coolify handles 80/443
+   - Health Check: `/`
 
 ## Common Port Issues
 

@@ -1,16 +1,17 @@
+# Coolify-specific Docker Compose configuration
+# This file is optimized for Coolify deployment
+
 version: '3.8'
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
     container_name: mnr-client-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: mnr_client_intake
-      POSTGRES_USER: mnr_user
-      POSTGRES_PASSWORD: mnr_password
-    ports:
-      - "5433:5432"
+      - POSTGRES_DB=mnr_client_intake
+      - POSTGRES_USER=mnr_user
+      - POSTGRES_PASSWORD=mnr_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
