@@ -128,15 +128,16 @@ process.on('SIGTERM', async () => {
 const startServer = async () => {
   try {
     await connectWithRetry();
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📊 Health check: http://localhost:${PORT}/health`);
-      console.log(`🔗 API base: http://localhost:${PORT}/api`);
-    });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
+    console.error('❌ Database connection failed, starting server anyway:', error);
+    // Continue without database for now
   }
+  
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/health`);
+    console.log(`🔗 API base: http://localhost:${PORT}/api`);
+  });
 };
 
 startServer();

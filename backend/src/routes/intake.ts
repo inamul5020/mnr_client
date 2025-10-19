@@ -30,6 +30,17 @@ const validateIntake = [
 // POST /api/intake - Submit new client intake
 router.post('/', validateIntake, authenticateUser, async (req: AuthenticatedRequest, res: any) => {
   try {
+    // Check database connection
+    try {
+      await prisma.$connect();
+    } catch (dbError) {
+      console.error('Database connection error:', dbError);
+      return res.status(503).json({ 
+        error: 'Database temporarily unavailable', 
+        message: 'Please try again in a few moments' 
+      });
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
