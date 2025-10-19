@@ -1,0 +1,38 @@
+# Simple Dockerfile for Coolify - Alternative approach
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache git
+
+# Copy package files
+COPY package.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV VITE_API_URL=https://api.mnrlk.com
+
+# Build the application
+RUN npm run build
+
+# Install nginx
+RUN apk add --no-cache nginx
+
+# Copy built files to nginx directory
+RUN cp -r dist/* /var/www/localhost/htdocs/
+
+# Copy nginx config
+COPY nginx.simple.conf /etc/nginx/nginx.conf
+
+# Expose port
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

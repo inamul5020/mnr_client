@@ -1,7 +1,3 @@
-# Coolify Deployment Configuration
-# This file is specifically optimized for Coolify deployment
-# Uses 'expose' instead of 'ports' for Coolify's reverse proxy
-
 version: '3.8'
 
 services:
@@ -53,7 +49,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.robust
+      dockerfile: Dockerfile.ubuntu
     container_name: mnr-client-frontend
     restart: unless-stopped
     expose:
