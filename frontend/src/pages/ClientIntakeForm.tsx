@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ClientIntake } from '../types';
-import { clientIntakeApi } from '../lib/api';
+import { clientIntakeApi } from '../lib/api-debug';
 import { SectionA } from '../components/form/SectionA';
 import { SectionB } from '../components/form/SectionB';
 import { SectionC } from '../components/form/SectionC';
