@@ -109,7 +109,7 @@ export const exportApi = {
 
   // Export all clients to Excel
   exportAllExcel: async (): Promise<Blob> => {
-    const response = await api.get('/export/excel/all', {
+    const response = await api.get('/export/excel-all', {
       responseType: 'blob'
     });
     return response.data;
@@ -125,7 +125,7 @@ export const exportApi = {
 
   // Export all clients to CSV
   exportAllCsv: async (): Promise<Blob> => {
-    const response = await api.get('/export/csv/all', {
+    const response = await api.get('/export/csv-all', {
       responseType: 'blob'
     });
     return response.data;

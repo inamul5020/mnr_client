@@ -6,8 +6,8 @@ import * as createCsvWriter from 'csv-writer';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// GET /api/export/excel/all - Export all clients to Excel
-router.get('/excel/all', async (req, res) => {
+// GET /api/export/excel-all - Export all clients to Excel
+router.get('/excel-all', async (req, res) => {
   try {
     const clientIntakes = await prisma.clientIntake.findMany({
       include: {
@@ -210,8 +210,8 @@ router.get('/excel/:id', async (req, res) => {
   }
 });
 
-// GET /api/export/csv/all - Export all clients to CSV
-router.get('/csv/all', async (req, res) => {
+// GET /api/export/csv-all - Export all clients to CSV
+router.get('/csv-all', async (req, res) => {
   try {
     const clientIntakes = await prisma.clientIntake.findMany({
       include: {
