@@ -16,8 +16,33 @@ import auditRoutes from './routes/audit';
 dotenv.config();
 
 const app = express();
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
+    }
+  }
+});
 const PORT = process.env.PORT || 3000;
+
+// Database connection retry logic
+const connectWithRetry = async (retries = 10, delay = 5000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await prisma.$connect();
+      console.log('✅ Database connected successfully');
+      return;
+    } catch (error) {
+      console.log(`❌ Database connection attempt ${i + 1} failed:`, error.message);
+      if (i === retries - 1) {
+        console.error('❌ Failed to connect to database after all retries');
+        throw error;
+      }
+      console.log(`⏳ Retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+};
 
 // Middleware
 app.use(helmet());
@@ -79,10 +104,21 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔗 API base: http://localhost:${PORT}/api`);
-});
+// Start server with database connection retry
+const startServer = async () => {
+  try {
+    await connectWithRetry();
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📊 Health check: http://localhost:${PORT}/health`);
+      console.log(`🔗 API base: http://localhost:${PORT}/api`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app;

@@ -1,5 +1,5 @@
-# Coolify-specific Docker Compose configuration
-# This file is optimized for Coolify deployment
+# Coolify-specific Docker Compose configuration (Robust Version)
+# This version is more resilient to startup issues
 
 version: '3.8'
 
@@ -39,9 +39,10 @@ services:
       - PORT=3001
       - CORS_ORIGIN=https://client.mnrlk.com
       - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - DATABASE_RETRY_ATTEMPTS=10
+      - DATABASE_RETRY_DELAY=5000
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     restart: unless-stopped
     labels:
       - "coolify.managed=true"
@@ -61,6 +62,7 @@ services:
       - VITE_API_URL=https://api.mnrlk.com
     depends_on:
       - backend
+    restart: unless-stopped
     labels:
       - "coolify.managed=true"
       - "coolify.name=mnr-client-frontend"
