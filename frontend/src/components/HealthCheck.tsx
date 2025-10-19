@@ -14,6 +14,7 @@ export function HealthCheck() {
         
         setApiUrl(API_BASE_URL);
         
+        // Use direct fetch since health endpoint is not under /api
         const response = await fetch(`${API_BASE_URL}/health`);
         
         if (response.ok) {
