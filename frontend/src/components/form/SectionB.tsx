@@ -88,25 +88,25 @@ export function SectionB({ form, errors }: SectionBProps) {
         </div>
 
         {/* TIN - Required for tax services */}
-        <div className="form-group">
-          <label className="label">
-            TIN (Tax Identification Number)
-            {isTaxServiceSelected && <span className="text-red-500"> *</span>}
-          </label>
-          <input
-            {...register('tin')}
-            className="input"
-            placeholder="Enter TIN if tax services are selected"
-          />
-          {isTaxServiceSelected && errors.tin && (
-            <p className="error-message">{errors.tin.message}</p>
-          )}
-          {isTaxServiceSelected && (
-            <p className="text-sm text-gray-500 mt-1">
+        {isTaxServiceSelected && (
+          <div className="form-group bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <label className="label">
+              TIN (Tax Identification Number) <span className="text-red-500">*</span>
+            </label>
+            <input
+              {...register('tin')}
+              className="input"
+              placeholder="Enter your TIN number (required for tax services)"
+              required
+            />
+            {errors.tin && (
+              <p className="error-message">{errors.tin.message}</p>
+            )}
+            <p className="text-sm text-yellow-700 mt-1">
               TIN is required when Direct Tax or Indirect Tax services are selected
             </p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
