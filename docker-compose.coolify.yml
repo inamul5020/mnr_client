@@ -30,7 +30,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.simple
+      dockerfile: Dockerfile.static
     container_name: mnr-client-backend
     restart: unless-stopped
     expose:
