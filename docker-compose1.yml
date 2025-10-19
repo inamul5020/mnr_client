@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mnr-client-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mnr_client_intake
+      POSTGRES_USER: mnr_user
+      POSTGRES_PASSWORD: mnr_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mnr_user -d mnr_client_intake"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=mnr-client-db"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mnr-client-backend
+    restart: unless-stopped
+    expose:
+      - "3001"
+    environment:
+      - DATABASE_URL=postgresql://mnr_user:mnr_password@postgres:5432/mnr_client_intake
+      - NODE_ENV=production
+      - PORT=3001
+      - CORS_ORIGIN=https://client.mnrlk.com
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=mnr-client-backend"
+      - "coolify.port=3001"
+      - "coolify.healthcheck=/health"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mnr-client-frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+    environment:
+      - VITE_API_URL=https://api.mnrlk.com
+    depends_on:
+      - backend
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=mnr-client-frontend"
+      - "coolify.port=80"
+      - "coolify.healthcheck=/"
+
+volumes:
+  postgres_data:
+    driver: local
