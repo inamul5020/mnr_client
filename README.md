@@ -2,6 +2,25 @@
 
 A comprehensive client intake management system for MNR Associates, built with React, Node.js, and PostgreSQL. This system allows staff to collect detailed client information through a structured form and manage client data through an admin dashboard.
 
+## 🎉 **STABLE VERSION - v1.5.0**
+
+**✅ FULLY WORKING & PRODUCTION READY**
+
+This is the stable, production-ready version that has been tested and verified to work in production.
+
+### **Quick Status**
+- ✅ **Frontend**: Working (client.mnrlk.com)
+- ✅ **Backend**: Working (api.mnrlk.com) 
+- ✅ **Database**: Connected and operational
+- ✅ **Authentication**: JWT-based auth working
+- ✅ **Form Submission**: Complete client intake working
+- ✅ **Admin Dashboard**: View, edit, delete, export working
+- ✅ **Export**: Excel and CSV export working
+
+### **Deployment**
+- **Use**: `docker-compose.coolify-v128.yml`
+- **Documentation**: See `STABLE_VERSION.md` for complete details
+
 ## 🚀 Features
 
 ### Client Intake Form
