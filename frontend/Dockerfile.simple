@@ -1,21 +1,23 @@
-# Build stage
+# Simple Dockerfile for Coolify deployment
+# This version uses a straightforward approach without complex debugging
+
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies
+# Install system dependencies
 RUN apk add --no-cache git
 
 # Copy package files
 COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN npm install --no-audit --no-fund
+RUN npm install
 
 # Copy source code
 COPY . .
 
-# Set environment variables for build
+# Set build environment
 ENV NODE_ENV=production
 ENV VITE_API_URL=https://api.mnrlk.com
 
