@@ -180,6 +180,7 @@ export function ClientIntakeForm() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Navigation buttons for easy access to dashboard */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-between mb-4">
           <a
