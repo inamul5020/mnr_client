@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ClientIntake } from '../types';
 import { clientIntakeApi, exportApi, downloadFile } from '../lib/api';
-import { Search, Download, Trash2, RefreshCw, Eye, Edit, Plus, ArrowRight } from 'lucide-react';
+import { Search, Download, Trash2, RefreshCw, Eye, Edit, Plus, ArrowRight, Save, X } from 'lucide-react';
 import { ClientDetailView } from '../components/ClientDetailView';
 
 export function AdminDashboard() {
@@ -12,6 +12,9 @@ export function AdminDashboard() {
   const [showDetailView, setShowDetailView] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientIntake | null>(null);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [editFormData, setEditFormData] = useState<Partial<ClientIntake>>({});
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
   const [deletePasscode, setDeletePasscode] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<string | null>(null);
@@ -66,19 +69,66 @@ export function AdminDashboard() {
 
   const handleEditClient = (client: ClientIntake) => {
     setEditingClient(client);
+    setEditFormData({ ...client });
+    setEditErrors({});
     setShowEditForm(true);
   };
 
   const handleCloseEditForm = () => {
     setShowEditForm(false);
     setEditingClient(null);
+    setEditFormData({});
+    setEditErrors({});
   };
 
-  const handleUpdateClient = async (updatedData: ClientIntake) => {
+  const handleEditFormChange = (field: string, value: any) => {
+    setEditFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (editErrors[field]) {
+      setEditErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const validateEditForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    
+    if (!editFormData.legalName?.trim()) {
+      errors.legalName = 'Legal name is required';
+    }
+    if (!editFormData.ownerName?.trim()) {
+      errors.ownerName = 'Owner name is required';
+    }
+    if (!editFormData.address?.trim()) {
+      errors.address = 'Address is required';
+    }
+    if (!editFormData.phoneMobile?.trim()) {
+      errors.phoneMobile = 'Mobile phone is required';
+    }
+    if (!editFormData.email?.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editFormData.email)) {
+      errors.email = 'Invalid email format';
+    }
+    if (!editFormData.natureOfBusiness?.trim()) {
+      errors.natureOfBusiness = 'Nature of business is required';
+    }
+    if (!editFormData.servicesSelected || editFormData.servicesSelected.length === 0) {
+      errors.servicesSelected = 'At least one service must be selected';
+    }
+    if (!editFormData.consent) {
+      errors.consent = 'Consent is required';
+    }
+
+    setEditErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleUpdateClient = async () => {
+    if (!validateEditForm() || !editingClient?.id) return;
+    
+    setIsSaving(true);
     try {
-      if (!editingClient?.id) return;
-      
-      const response = await clientIntakeApi.update(editingClient.id, updatedData);
+      const response = await clientIntakeApi.update(editingClient.id, editFormData as ClientIntake);
       if (response.success) {
         fetchData();
         handleCloseEditForm();
@@ -88,6 +138,8 @@ export function AdminDashboard() {
       }
     } catch (err: any) {
       setError(err.message || 'Failed to update client intake');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -488,28 +540,216 @@ export function AdminDashboard() {
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900">Edit Client: {editingClient.legalName}</h2>
               <button onClick={handleCloseEditForm} className="text-gray-500 hover:text-gray-700">
-                <span className="sr-only">Close</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="h-6 w-6" />
               </button>
             </div>
             <div className="p-6">
-              <p className="text-gray-600 mb-4">
-                Edit functionality will be implemented here. For now, you can view the client details.
-              </p>
-              <div className="flex justify-end space-x-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Section A - Organization Details */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Organization Details</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Legal Name *</label>
+                    <input
+                      type="text"
+                      value={editFormData.legalName || ''}
+                      onChange={(e) => handleEditFormChange('legalName', e.target.value)}
+                      className={`input ${editErrors.legalName ? 'border-red-500' : ''}`}
+                    />
+                    {editErrors.legalName && <p className="text-red-500 text-xs mt-1">{editErrors.legalName}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Trade Name</label>
+                    <input
+                      type="text"
+                      value={editFormData.tradeName || ''}
+                      onChange={(e) => handleEditFormChange('tradeName', e.target.value)}
+                      className="input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
+                    <select
+                      value={editFormData.type || ''}
+                      onChange={(e) => handleEditFormChange('type', e.target.value)}
+                      className="input"
+                    >
+                      <option value="INDIVIDUAL">Individual</option>
+                      <option value="PARTNERSHIP">Partnership</option>
+                      <option value="COMPANY">Company</option>
+                      <option value="NGO">NGO</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Owner/Primary Contact *</label>
+                    <input
+                      type="text"
+                      value={editFormData.ownerName || ''}
+                      onChange={(e) => handleEditFormChange('ownerName', e.target.value)}
+                      className={`input ${editErrors.ownerName ? 'border-red-500' : ''}`}
+                    />
+                    {editErrors.ownerName && <p className="text-red-500 text-xs mt-1">{editErrors.ownerName}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                    <textarea
+                      value={editFormData.address || ''}
+                      onChange={(e) => handleEditFormChange('address', e.target.value)}
+                      className={`input ${editErrors.address ? 'border-red-500' : ''}`}
+                      rows={3}
+                    />
+                    {editErrors.address && <p className="text-red-500 text-xs mt-1">{editErrors.address}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Phone *</label>
+                    <input
+                      type="tel"
+                      value={editFormData.phoneMobile || ''}
+                      onChange={(e) => handleEditFormChange('phoneMobile', e.target.value)}
+                      className={`input ${editErrors.phoneMobile ? 'border-red-500' : ''}`}
+                    />
+                    {editErrors.phoneMobile && <p className="text-red-500 text-xs mt-1">{editErrors.phoneMobile}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input
+                      type="email"
+                      value={editFormData.email || ''}
+                      onChange={(e) => handleEditFormChange('email', e.target.value)}
+                      className={`input ${editErrors.email ? 'border-red-500' : ''}`}
+                    />
+                    {editErrors.email && <p className="text-red-500 text-xs mt-1">{editErrors.email}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nature of Business *</label>
+                    <input
+                      type="text"
+                      value={editFormData.natureOfBusiness || ''}
+                      onChange={(e) => handleEditFormChange('natureOfBusiness', e.target.value)}
+                      className={`input ${editErrors.natureOfBusiness ? 'border-red-500' : ''}`}
+                    />
+                    {editErrors.natureOfBusiness && <p className="text-red-500 text-xs mt-1">{editErrors.natureOfBusiness}</p>}
+                  </div>
+                </div>
+
+                {/* Section B - Services */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Services & Tax Info</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Services Selected *</label>
+                    <div className="space-y-2">
+                      {['Direct Tax', 'Indirect Tax', 'HR Services', 'SLTDA', 'Trade License'].map(service => (
+                        <label key={service} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={editFormData.servicesSelected?.includes(service) || false}
+                            onChange={(e) => {
+                              const current = editFormData.servicesSelected || [];
+                              if (e.target.checked) {
+                                handleEditFormChange('servicesSelected', [...current, service]);
+                              } else {
+                                handleEditFormChange('servicesSelected', current.filter(s => s !== service));
+                              }
+                            }}
+                            className="mr-2"
+                          />
+                          <span className="text-sm text-gray-700">{service}</span>
+                        </label>
+                      ))}
+                    </div>
+                    {editErrors.servicesSelected && <p className="text-red-500 text-xs mt-1">{editErrors.servicesSelected}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">TIN</label>
+                    <input
+                      type="text"
+                      value={editFormData.tin || ''}
+                      onChange={(e) => handleEditFormChange('tin', e.target.value)}
+                      className="input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">RAMIS Status</label>
+                    <select
+                      value={editFormData.ramisStatus || ''}
+                      onChange={(e) => handleEditFormChange('ramisStatus', e.target.value)}
+                      className="input"
+                    >
+                      <option value="AVAILABLE">Available</option>
+                      <option value="NOT_AVAILABLE">Not Available</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">RAMIS Email</label>
+                    <input
+                      type="email"
+                      value={editFormData.ramisEmail || ''}
+                      onChange={(e) => handleEditFormChange('ramisEmail', e.target.value)}
+                      className="input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea
+                      value={editFormData.notes || ''}
+                      onChange={(e) => handleEditFormChange('notes', e.target.value)}
+                      className="input"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.consent || false}
+                      onChange={(e) => handleEditFormChange('consent', e.target.checked)}
+                      className="mr-2"
+                    />
+                    <span className="text-sm text-gray-700">Consent Given *</span>
+                    {editErrors.consent && <p className="text-red-500 text-xs ml-2">{editErrors.consent}</p>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6 pt-6 border-t">
                 <button
                   onClick={handleCloseEditForm}
                   className="btn btn-secondary"
+                  disabled={isSaving}
                 >
-                  Close
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
                 </button>
                 <button
-                  onClick={() => handleUpdateClient(editingClient)}
+                  onClick={handleUpdateClient}
                   className="btn btn-primary"
+                  disabled={isSaving}
                 >
-                  Save Changes
+                  {isSaving ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
                 </button>
               </div>
             </div>
