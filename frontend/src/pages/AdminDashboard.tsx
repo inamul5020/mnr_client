@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ClientIntake } from '../types';
 import { clientIntakeApi, exportApi, downloadFile } from '../lib/api';
-import { Search, Download, Trash2, RefreshCw, Eye, Edit } from 'lucide-react';
+import { Search, Download, Trash2, RefreshCw, Eye, Edit, Plus, ArrowRight } from 'lucide-react';
 import { ClientDetailView } from '../components/ClientDetailView';
 
 export function AdminDashboard() {
@@ -161,12 +161,24 @@ export function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Admin Dashboard
-        </h1>
-        <p className="text-gray-600">
-          Manage client intake submissions and export data
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-600">
+              Manage client intake submissions and export data
+            </p>
+          </div>
+          <a
+            href="/"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Client Form
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </a>
+        </div>
       </div>
 
       {error && (

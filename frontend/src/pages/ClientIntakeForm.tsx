@@ -14,6 +14,7 @@ import { FormProgress } from '../components/form/FormProgress';
 import { FormNavigation } from '../components/form/FormNavigation';
 import { SuccessMessage } from '../components/ui/SuccessMessage';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
+import { Users, ArrowLeft } from 'lucide-react';
 
 const formSchema = z.object({
   // Section A - Organization Details
@@ -180,6 +181,23 @@ export function ClientIntakeForm() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <a
+            href="/admin"
+            className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </a>
+          <div className="flex-1"></div>
+          <a
+            href="/admin"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+          >
+            <Users className="h-4 w-4 mr-2" />
+            View Dashboard
+          </a>
+        </div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Client Intake Form
         </h1>
