@@ -1,18 +1,20 @@
-# Coolify-specific Docker Compose configuration
-# This file is optimized for Coolify deployment
+# Coolify Deployment Configuration
+# This file is specifically optimized for Coolify deployment
+# Uses 'expose' instead of 'ports' for Coolify's reverse proxy
 
 version: '3.8'
 
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: mnr-client-db
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=mnr_client_intake
-      - POSTGRES_USER=mnr_user
-      - POSTGRES_PASSWORD=mnr_password
-      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+      POSTGRES_DB: mnr_client_intake
+      POSTGRES_USER: mnr_user
+      POSTGRES_PASSWORD: mnr_password
+    expose:
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -42,7 +44,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    restart: unless-stopped
     labels:
       - "coolify.managed=true"
       - "coolify.name=mnr-client-backend"
