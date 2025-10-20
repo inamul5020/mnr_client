@@ -5,6 +5,7 @@ export const getApiBaseUrl = (): string => {
   // Check for environment variable first (highest priority)
   const envUrl = (import.meta as any).env?.VITE_API_URL as string | undefined;
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  
   if (envUrl) {
     // SAFEGUARD: If running on mnrlk.com but env points to localhost, override to production
     if ((hostname.includes('mnrlk.com') || hostname.includes('mnr')) && envUrl.includes('localhost')) {
@@ -42,5 +43,5 @@ export const getApiBaseUrl = (): string => {
   return 'https://api.mnrlk.com';
 };
 
-// Export the detected URL for easy access
+// Export a function that gets the URL at runtime, not build time
 export const API_BASE_URL = getApiBaseUrl();

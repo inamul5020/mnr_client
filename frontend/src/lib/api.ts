@@ -1,13 +1,18 @@
 import axios from 'axios';
 import { ClientIntake, ApiResponse, PaginatedResponse, Statistics } from '../types';
-import { API_BASE_URL } from './apiConfig';
+import { getApiBaseUrl } from './apiConfig';
 
-const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// Create axios instance with dynamic base URL
+const createApiInstance = () => {
+  return axios.create({
+    baseURL: `${getApiBaseUrl()}/api`,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+const api = createApiInstance();
 
 // Add auth token to requests
 api.interceptors.request.use((config) => {
@@ -45,7 +50,7 @@ api.interceptors.response.use(
     
     // Handle specific error cases
     if (error.code === 'ERR_NETWORK') {
-      console.error('Network Error: Cannot connect to backend API at', API_BASE_URL);
+      console.error('Network Error: Cannot connect to backend API at', getApiBaseUrl());
     }
     
     return Promise.reject(error);
