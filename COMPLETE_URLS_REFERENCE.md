@@ -95,14 +95,14 @@ ENV VITE_API_URL=https://api.mnrlk.com
 
 #### **API Configuration** (`/frontend/src/lib/apiConfig.ts`)
 ```typescript
-// Smart detection logic
+// Runtime API URL detection (NOT build-time)
 export const getApiBaseUrl = (): string => {
   // Environment variable takes priority
   if ((import.meta as any).env?.VITE_API_URL) {
     return (import.meta as any).env.VITE_API_URL;
   }
   
-  // Auto-detect based on hostname
+  // Auto-detect based on hostname at runtime
   const hostname = window.location.hostname;
   
   // Development environments
@@ -121,6 +121,8 @@ export const getApiBaseUrl = (): string => {
   return 'https://api.mnrlk.com';
 };
 ```
+
+**Important**: The frontend uses **runtime detection**, not build-time embedding. The same build works for both environments because URLs are determined when the application runs in the browser.
 
 #### **Vite Config** (`/frontend/vite.config.ts`)
 ```typescript

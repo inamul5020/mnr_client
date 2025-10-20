@@ -204,3 +204,38 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 5. **Environment Variables**: Use secure environment variable management
 
 **🚀 Ready for Multi-Environment Deployment!**
+
+---
+
+## 🔍 **Frontend Build Process - Important Notes**
+
+### **Runtime vs Build-Time Configuration**
+
+The frontend uses **runtime URL detection**, which means:
+
+1. **Same Build for Both Environments**: The same `dist` folder works for both development and production
+2. **Runtime Detection**: URLs are determined when the application runs in the browser using `window.location.hostname`
+3. **Environment Variable Override**: `VITE_API_URL` can override the detection logic
+4. **No Hardcoded URLs**: The built JavaScript files don't contain hardcoded API URLs
+
+### **Build Commands**
+```bash
+# Development build (with localhost override)
+VITE_API_URL=http://localhost:3001 npm run build
+
+# Production build (with production override)  
+VITE_API_URL=https://api.mnrlk.com npm run build
+
+# Default build (uses runtime detection)
+npm run build
+```
+
+### **Built Files Location**
+- **All Environments**: `/frontend/dist/` (same files, runtime detection)
+- **Docker**: Built during Docker image creation with environment variables
+
+### **Why This Approach is Better**
+- ✅ **Flexible**: Same build works everywhere
+- ✅ **Environment-Aware**: Automatically detects environment
+- ✅ **Override Capable**: Can be overridden with environment variables
+- ✅ **No Rebuild Required**: Switch environments without rebuilding
