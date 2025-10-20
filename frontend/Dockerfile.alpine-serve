@@ -3,8 +3,8 @@ FROM alpine:3.19
 
 WORKDIR /app
 
-# Install Node.js, npm and git from Alpine repos
-RUN apk add --no-cache nodejs npm git
+# Install Node.js, npm, git and build dependencies from Alpine repos
+RUN apk add --no-cache nodejs npm git python3 make g++
 
 # Copy package files first for better caching
 COPY package.json package-lock.json* ./

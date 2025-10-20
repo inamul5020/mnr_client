@@ -1,7 +1,7 @@
 # Backend using Alpine base without Docker Hub node image
 FROM alpine:3.19 AS base
 
-RUN apk add --no-cache nodejs npm libc6-compat git
+RUN apk add --no-cache nodejs npm libc6-compat git python3 make g++
 WORKDIR /app
 
 # Dependencies
