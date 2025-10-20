@@ -11,6 +11,7 @@ import intakeRoutes from './routes/intake';
 import exportRoutes from './routes/export';
 import authRoutes from './routes/auth';
 import auditRoutes from './routes/audit';
+import statsRoutes from './routes/stats';
 
 // Load environment variables
 dotenv.config();
@@ -67,7 +68,7 @@ const connectWithRetry = async (retries = 10, delay = 5000) => {
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'https://mnrlk.com',
   credentials: true
 }));
 app.use(morgan('combined'));
@@ -96,6 +97,7 @@ app.use('/api/intake', intakeRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

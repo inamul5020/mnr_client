@@ -2,17 +2,16 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 import { ClientIntake } from '../types';
 import { clientIntakeApi } from '../lib/api';
 import { SectionA } from '../components/form/SectionA';
 import { SectionB } from '../components/form/SectionB';
-import { SectionC } from '../components/form/SectionC';
 import { SectionD } from '../components/form/SectionD';
 import { SectionE } from '../components/form/SectionE';
 import { SectionF } from '../components/form/SectionF';
 import { FormProgress } from '../components/form/FormProgress';
 import { FormNavigation } from '../components/form/FormNavigation';
-import { SuccessMessage } from '../components/ui/SuccessMessage';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { Users, ArrowLeft } from 'lucide-react';
 
@@ -35,13 +34,14 @@ const formSchema = z.object({
   industry: z.string().optional(),
   clientPriority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'VIP']).optional(),
   
-  // Section B - Services
+  // Section B - Services & Tax Profile (merged)
   servicesSelected: z.array(z.string()).min(1, 'At least one service must be selected'),
-  serviceFrequency: z.string().optional(),
+  directTaxSubcategories: z.array(z.string()).optional(),
+  indirectTaxSubcategories: z.array(z.string()).optional(),
+  incomeTaxTypes: z.array(z.string()).optional(),
+  serviceFrequencies: z.record(z.string()).optional(),
+  taxReturnYears: z.record(z.array(z.string())).optional(),
   tin: z.string().optional(),
-  
-  // Section C - Tax Profile
-  taxTypesSelected: z.array(z.string()).optional(),
   otherRegistrations: z.string().optional(),
   
   // Section D - Related Parties & Company Details
@@ -79,6 +79,24 @@ const formSchema = z.object({
     phone: z.string().optional()
   })).optional()
 }).refine((data) => {
+  // Direct Tax subcategories required when Direct Tax is selected
+  if (data.servicesSelected.includes('Direct Tax')) {
+    return data.directTaxSubcategories && data.directTaxSubcategories.length > 0;
+  }
+  return true;
+}, {
+  message: 'At least one Direct Tax subcategory must be selected',
+  path: ['directTaxSubcategories']
+}).refine((data) => {
+  // Indirect Tax subcategories required when Indirect Tax is selected
+  if (data.servicesSelected.includes('Indirect Tax')) {
+    return data.indirectTaxSubcategories && data.indirectTaxSubcategories.length > 0;
+  }
+  return true;
+}, {
+  message: 'At least one Indirect Tax subcategory must be selected',
+  path: ['indirectTaxSubcategories']
+}).refine((data) => {
   // TIN required when tax services are selected
   if (data.servicesSelected.includes('Direct Tax') || data.servicesSelected.includes('Indirect Tax')) {
     return data.tin && data.tin.length > 0;
@@ -102,17 +120,16 @@ export type FormData = z.infer<typeof formSchema>;
 
 const SECTIONS = [
   { id: 'section-a', title: 'Organization Details', description: 'Basic client information' },
-  { id: 'section-b', title: 'Services Needed', description: 'Service requirements and frequency' },
-  { id: 'section-c', title: 'Tax Profile', description: 'Tax registrations and compliance' },
+  { id: 'section-b', title: 'Services & Tax Profile', description: 'Service requirements and tax information' },
   { id: 'section-d', title: 'Related Parties', description: 'Directors, partners, and key personnel' },
   { id: 'section-e', title: 'RAMIS & Documents', description: 'System access and document tracking' },
   { id: 'section-f', title: 'Financial Terms', description: 'Payment terms and preferences' }
 ];
 
 export function ClientIntakeForm() {
+  const navigate = useNavigate();
   const [currentSection, setCurrentSection] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm<FormData>({
@@ -126,7 +143,11 @@ export function ClientIntakeForm() {
       clientPriority: 'MEDIUM',
       preferredCurrency: 'USD',
       servicesSelected: [],
-      taxTypesSelected: [],
+      directTaxSubcategories: [],
+      indirectTaxSubcategories: [],
+      incomeTaxTypes: [],
+      serviceFrequencies: {},
+      taxReturnYears: {},
       relatedParties: [],
       consent: false
     },
@@ -155,10 +176,8 @@ export function ClientIntakeForm() {
       const response = await clientIntakeApi.create(data as ClientIntake);
       
       if (response.success) {
-        setSubmitSuccess(true);
-        // Reset form
-        form.reset();
-        setCurrentSection(0);
+        // Navigate to success page instead of setting local state
+        navigate('/success');
       } else {
         setSubmitError(response.error || 'Failed to submit form');
       }
@@ -173,10 +192,6 @@ export function ClientIntakeForm() {
       setIsSubmitting(false);
     }
   };
-
-  if (submitSuccess) {
-    return <SuccessMessage />;
-  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -222,15 +237,12 @@ export function ClientIntakeForm() {
               <SectionB form={form} errors={errors} />
             )}
             {currentSection === 2 && (
-              <SectionC form={form} errors={errors} />
-            )}
-            {currentSection === 3 && (
               <SectionD form={form} errors={errors} />
             )}
-            {currentSection === 4 && (
+            {currentSection === 3 && (
               <SectionE form={form} errors={errors} />
             )}
-            {currentSection === 5 && (
+            {currentSection === 4 && (
               <SectionF form={form} errors={errors} />
             )}
           </div>

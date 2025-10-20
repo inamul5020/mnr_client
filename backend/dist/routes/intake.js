@@ -47,10 +47,8 @@ router.post('/', validateIntake, auth_1.authenticateUser, async (req, res) => {
         const { 
         // Section A
         legalName, tradeName, type, ownerName, address, city, state, zipCode, country, phoneMobile, phoneLand, email, website, natureOfBusiness, industry, clientPriority, 
-        // Section B
-        servicesSelected, serviceFrequency, tin, 
-        // Section C
-        taxTypesSelected, otherRegistrations, 
+        // Section B - Services & Tax Profile (merged)
+        servicesSelected, directTaxSubcategories, indirectTaxSubcategories, incomeTaxTypes, serviceFrequencies, taxReturnYears, tin, otherRegistrations, 
         // Section D
         companySecretary, registrationNumber, incorporationDate, annualRevenue, employeeCount, 
         // Section E
@@ -66,6 +64,21 @@ router.post('/', validateIntake, auth_1.authenticateUser, async (req, res) => {
             if (!tin) {
                 return res.status(400).json({
                     error: 'TIN is required when tax services are selected'
+                });
+            }
+        }
+        // Validate subcategories
+        if (servicesSelected.includes('Direct Tax')) {
+            if (!directTaxSubcategories || directTaxSubcategories.length === 0) {
+                return res.status(400).json({
+                    error: 'At least one Direct Tax subcategory must be selected'
+                });
+            }
+        }
+        if (servicesSelected.includes('Indirect Tax')) {
+            if (!indirectTaxSubcategories || indirectTaxSubcategories.length === 0) {
+                return res.status(400).json({
+                    error: 'At least one Indirect Tax subcategory must be selected'
                 });
             }
         }
@@ -94,12 +107,14 @@ router.post('/', validateIntake, auth_1.authenticateUser, async (req, res) => {
                 natureOfBusiness,
                 industry,
                 clientPriority: clientPriority || 'MEDIUM',
-                // Section B
+                // Section B - Services & Tax Profile (merged)
                 servicesSelected,
-                serviceFrequency,
+                directTaxSubcategories: directTaxSubcategories || [],
+                indirectTaxSubcategories: indirectTaxSubcategories || [],
+                incomeTaxTypes: incomeTaxTypes || [],
+                serviceFrequencies: serviceFrequencies || {},
+                taxReturnYears: taxReturnYears || {},
                 tin,
-                // Section C
-                taxTypesSelected: taxTypesSelected || [],
                 otherRegistrations,
                 // Section D
                 companySecretary,
@@ -166,10 +181,8 @@ router.put('/:id', validateIntake, auth_1.authenticateUser, async (req, res) => 
         const { 
         // Section A
         legalName, tradeName, type, ownerName, address, city, state, zipCode, country, phoneMobile, phoneLand, email, website, natureOfBusiness, industry, clientPriority, 
-        // Section B
-        servicesSelected, serviceFrequency, tin, 
-        // Section C
-        taxTypesSelected, otherRegistrations, 
+        // Section B - Services & Tax Profile (merged)
+        servicesSelected, directTaxSubcategories, indirectTaxSubcategories, incomeTaxTypes, serviceFrequencies, taxReturnYears, tin, otherRegistrations, 
         // Section D
         companySecretary, registrationNumber, incorporationDate, annualRevenue, employeeCount, 
         // Section E
@@ -194,6 +207,17 @@ router.put('/:id', validateIntake, auth_1.authenticateUser, async (req, res) => 
         if (isTaxServiceSelected && !tin) {
             return res.status(400).json({ error: 'TIN is required when tax services are selected' });
         }
+        // Validate subcategories
+        if (servicesSelected?.includes('Direct Tax')) {
+            if (!directTaxSubcategories || directTaxSubcategories.length === 0) {
+                return res.status(400).json({ error: 'At least one Direct Tax subcategory must be selected' });
+            }
+        }
+        if (servicesSelected?.includes('Indirect Tax')) {
+            if (!indirectTaxSubcategories || indirectTaxSubcategories.length === 0) {
+                return res.status(400).json({ error: 'At least one Indirect Tax subcategory must be selected' });
+            }
+        }
         // Update client intake record
         const updatedClientIntake = await prisma.clientIntake.update({
             where: { id },
@@ -215,12 +239,13 @@ router.put('/:id', validateIntake, auth_1.authenticateUser, async (req, res) => 
                 natureOfBusiness,
                 industry,
                 clientPriority: clientPriority || 'MEDIUM',
-                // Section B
+                // Section B - Services & Tax Profile (merged)
                 servicesSelected: servicesSelected || [],
-                serviceFrequency,
+                directTaxSubcategories: directTaxSubcategories || [],
+                indirectTaxSubcategories: indirectTaxSubcategories || [],
+                serviceFrequencies: serviceFrequencies || {},
+                taxReturnYears: taxReturnYears || {},
                 tin,
-                // Section C
-                taxTypesSelected: taxTypesSelected || [],
                 otherRegistrations,
                 // Section D
                 companySecretary,

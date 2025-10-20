@@ -1,6 +1,13 @@
 # API Documentation
 
 ## Base URL
+
+### Production
+```
+https://api.mnrlk.com/api
+```
+
+### Development
 ```
 http://localhost:3001/api
 ```
@@ -87,9 +94,24 @@ Submit a new client intake (requires authentication).
   "industry": "Technology",
   "clientPriority": "HIGH",
   "servicesSelected": ["Direct Tax", "Indirect Tax"],
-  "serviceFrequency": "Monthly",
+  "directTaxSubcategories": ["Income Taxes", "Capital Gain Tax"],
+  "indirectTaxSubcategories": ["VAT", "SSCL"],
+  "incomeTaxTypes": ["CIT", "PIT"],
+  "serviceFrequencies": {
+    "Income Taxes": "Monthly",
+    "Capital Gain Tax": "Annually",
+    "VAT": "Quarterly",
+    "SSCL": "Monthly"
+  },
+  "taxReturnYears": {
+    "Income Taxes": ["2020", "2021", "2022", "2023"],
+    "Capital Gain Tax": ["2023"],
+    "VAT": ["2020", "2021", "2022", "2023"],
+    "SSCL": ["2021", "2022", "2023"],
+    "CIT": ["2020", "2021", "2022", "2023"],
+    "PIT": ["2020", "2021", "2022", "2023"]
+  },
   "tin": "123456789V",
-  "taxTypesSelected": ["Income Tax", "VAT"],
   "otherRegistrations": "BOI registration",
   "companySecretary": "Jane Doe",
   "registrationNumber": "PV123456",
@@ -216,6 +238,24 @@ Update client intake (requires authentication).
   "email": "updatedjohn@abccompany.com",
   "natureOfBusiness": "Updated Software development",
   "servicesSelected": ["Direct Tax", "Indirect Tax", "HR Services"],
+  "directTaxSubcategories": ["Income Taxes", "Capital Gain Tax"],
+  "indirectTaxSubcategories": ["VAT", "SSCL"],
+  "incomeTaxTypes": ["CIT", "PIT"],
+  "serviceFrequencies": {
+    "Income Taxes": "Monthly",
+    "Capital Gain Tax": "Annually",
+    "VAT": "Quarterly",
+    "SSCL": "Monthly",
+    "HR Services": "Monthly"
+  },
+  "taxReturnYears": {
+    "Income Taxes": ["2020", "2021", "2022", "2023"],
+    "Capital Gain Tax": ["2023"],
+    "VAT": ["2020", "2021", "2022", "2023"],
+    "SSCL": ["2021", "2022", "2023"],
+    "CIT": ["2020", "2021", "2022", "2023"],
+    "PIT": ["2020", "2021", "2022", "2023"]
+  },
   "tin": "123456789V",
   "companySecretary": "Updated Secretary",
   "ramisStatus": "AVAILABLE",
@@ -280,9 +320,41 @@ Export all clients to CSV file.
 
 **Response:** CSV file download
 
-### Audit
+### Statistics
 
-#### GET /audit/logs
+#### GET /stats
+Get system statistics (requires authentication).
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "totalClients": 150,
+    "taxClients": 120,
+    "serviceBreakdown": [
+      { "service": "Direct Tax", "count": 80 },
+      { "service": "Indirect Tax", "count": 70 },
+      { "service": "Accounts", "count": 45 },
+      { "service": "Audit", "count": 30 }
+    ],
+    "priorityDistribution": [
+      { "priority": "HIGH", "count": 25 },
+      { "priority": "MEDIUM", "count": 80 },
+      { "priority": "LOW", "count": 45 }
+    ],
+    "ramisStatusBreakdown": [
+      { "status": "AVAILABLE", "count": 100 },
+      { "status": "NOT_AVAILABLE", "count": 50 }
+    ],
+    "recentClients": 12,
+    "directTaxCount": 80,
+    "indirectTaxCount": 70
+  }
+}
+```
+
+### Audit
 Get audit logs (requires authentication).
 
 **Query Parameters:**
@@ -391,9 +463,12 @@ interface ClientIntake {
   industry?: string;
   clientPriority: 'LOW' | 'MEDIUM' | 'HIGH' | 'VIP';
   servicesSelected: string[];
-  serviceFrequency?: string;
+  directTaxSubcategories?: string[];
+  indirectTaxSubcategories?: string[];
+  incomeTaxTypes?: string[];
+  serviceFrequencies?: Record<string, string>;
+  taxReturnYears?: Record<string, string[]>;
   tin?: string;
-  taxTypesSelected: string[];
   otherRegistrations?: string;
   companySecretary?: string;
   registrationNumber?: string;

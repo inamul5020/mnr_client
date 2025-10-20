@@ -19,13 +19,14 @@ export interface ClientIntake {
   industry?: string;
   clientPriority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'VIP';
   
-  // Section B - Services
+  // Section B - Services & Tax Profile (merged)
   servicesSelected: string[];
-  serviceFrequency?: string;
+  directTaxSubcategories?: string[];
+  indirectTaxSubcategories?: string[];
+  incomeTaxTypes?: string[];
+  serviceFrequencies?: Record<string, string>;
+  taxReturnYears?: Record<string, string[]>;
   tin?: string;
-  
-  // Section C - Tax Profile
-  taxTypesSelected: string[];
   otherRegistrations?: string;
   
   // Section D - Related Parties & Company Details
@@ -114,18 +115,37 @@ export const SERVICES = [
   'Direct Tax',
   'Indirect Tax',
   'HR Services',
-  'SLTDA Services',
+  'SLTDA',
   'Trade License',
-  'Other'
+  'Accounts',
+  'Audit'
 ];
 
-export const TAX_TYPES = [
-  'Income Tax',
+export const DIRECT_TAX_SUBCATEGORIES = [
+  'Income Taxes',
+  'Capital Gain Tax'
+];
+
+export const INDIRECT_TAX_SUBCATEGORIES = [
   'VAT',
   'SSCL',
   'APIT',
   'WHT/AIT'
 ];
+
+export const INCOME_TAX_TYPES = [
+  'CIT',
+  'PIT',
+  'IIT'
+];
+
+export const FREQUENCY_OPTIONS = [
+  'Monthly',
+  'Quarterly',
+  'Annually'
+];
+
+export const TAX_YEARS = Array.from({ length: 16 }, (_, i) => (2010 + i).toString());
 
 export const RELATIONSHIPS = [
   'Director',
@@ -153,3 +173,14 @@ export const CURRENCIES = [
   'AUD',
   'CAD'
 ];
+
+export interface Statistics {
+  totalClients: number;
+  taxClients: number;
+  serviceBreakdown: { service: string; count: number }[];
+  priorityDistribution: { priority: string; count: number }[];
+  ramisStatusBreakdown: { status: string; count: number }[];
+  recentClients: number;
+  directTaxCount: number;
+  indirectTaxCount: number;
+}

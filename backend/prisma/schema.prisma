@@ -32,13 +32,14 @@ model ClientIntake {
   industry    String?
   clientPriority ClientPriority @default(MEDIUM)
   
-  // Section B - Services
+  // Section B - Services & Tax Profile (merged)
   servicesSelected String[] // Array of selected services
-  serviceFrequency String? // Monthly/Quarterly/Annual
+  directTaxSubcategories String[] // Array of Direct Tax subcategories
+  indirectTaxSubcategories String[] // Array of Indirect Tax subcategories
+  incomeTaxTypes String[] // Array of Income Tax types (CIT, PIT, IIT)
+  serviceFrequencies Json? // Frequency per subcategory as key-value pairs
+  taxReturnYears Json? // Year submissions per subcategory
   tin             String?
-  
-  // Section C - Tax Profile
-  taxTypesSelected String[] // Array of tax types
   otherRegistrations String?
   
   // Section D - Related Parties & Company Details

@@ -117,13 +117,14 @@ router.get('/excel/:id', async (req, res) => {
     clientSheet.addRow({ field: 'Industry', value: clientIntake.industry || '' });
     clientSheet.addRow({ field: 'Client Priority', value: clientIntake.clientPriority });
 
-    // Section B - Services
+    // Section B - Services & Tax Profile (merged)
     clientSheet.addRow({ field: 'Services Selected', value: clientIntake.servicesSelected.join(', ') });
-    clientSheet.addRow({ field: 'Service Frequency', value: clientIntake.serviceFrequency || '' });
+    clientSheet.addRow({ field: 'Direct Tax Subcategories', value: clientIntake.directTaxSubcategories?.join(', ') || '' });
+    clientSheet.addRow({ field: 'Indirect Tax Subcategories', value: clientIntake.indirectTaxSubcategories?.join(', ') || '' });
+    clientSheet.addRow({ field: 'Income Tax Types', value: clientIntake.incomeTaxTypes?.join(', ') || '' });
+    clientSheet.addRow({ field: 'Service Frequencies', value: JSON.stringify(clientIntake.serviceFrequencies || {}) });
+    clientSheet.addRow({ field: 'Tax Return Years', value: JSON.stringify(clientIntake.taxReturnYears || {}) });
     clientSheet.addRow({ field: 'TIN', value: clientIntake.tin || '' });
-
-    // Section C - Tax Profile
-    clientSheet.addRow({ field: 'Tax Types Selected', value: clientIntake.taxTypesSelected.join(', ') });
     clientSheet.addRow({ field: 'Other Registrations', value: clientIntake.otherRegistrations || '' });
 
     // Section D - Company Details
@@ -308,9 +309,12 @@ router.get('/csv/:id', async (req, res) => {
         { id: 'industry', title: 'Industry' },
         { id: 'clientPriority', title: 'Client Priority' },
         { id: 'servicesSelected', title: 'Services Selected' },
-        { id: 'serviceFrequency', title: 'Service Frequency' },
+        { id: 'directTaxSubcategories', title: 'Direct Tax Subcategories' },
+        { id: 'indirectTaxSubcategories', title: 'Indirect Tax Subcategories' },
+        { id: 'incomeTaxTypes', title: 'Income Tax Types' },
+        { id: 'serviceFrequencies', title: 'Service Frequencies' },
+        { id: 'taxReturnYears', title: 'Tax Return Years' },
         { id: 'tin', title: 'TIN' },
-        { id: 'taxTypesSelected', title: 'Tax Types Selected' },
         { id: 'otherRegistrations', title: 'Other Registrations' },
         { id: 'companySecretary', title: 'Company Secretary' },
         { id: 'registrationNumber', title: 'Registration Number' },
@@ -359,7 +363,11 @@ router.get('/csv/:id', async (req, res) => {
     const csvData = {
       ...clientIntake,
       servicesSelected: clientIntake.servicesSelected.join(', '),
-      taxTypesSelected: clientIntake.taxTypesSelected.join(', '),
+      directTaxSubcategories: clientIntake.directTaxSubcategories?.join(', ') || '',
+      indirectTaxSubcategories: clientIntake.indirectTaxSubcategories?.join(', ') || '',
+      incomeTaxTypes: clientIntake.incomeTaxTypes?.join(', ') || '',
+      serviceFrequencies: JSON.stringify(clientIntake.serviceFrequencies || {}),
+      taxReturnYears: JSON.stringify(clientIntake.taxReturnYears || {}),
       incorporationDate: clientIntake.incorporationDate?.toLocaleDateString() || '',
       submittedAt: clientIntake.submittedAt.toLocaleString(),
       docsBusinessReg: clientIntake.docsBusinessReg ? 'Yes' : 'No',

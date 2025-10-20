@@ -1,5 +1,7 @@
 import { ClientIntake } from '../types';
-import { X, User, Building, FileText, Shield, CreditCard, Calendar, Phone, Mail, MapPin, Globe } from 'lucide-react';
+import { X, User, Building, FileText, Shield, CreditCard, Calendar, Phone, Mail, MapPin, Globe, Printer } from 'lucide-react';
+import { PrintView } from './PrintView';
+import { useState } from 'react';
 
 interface ClientDetailViewProps {
   client: ClientIntake;
@@ -8,6 +10,8 @@ interface ClientDetailViewProps {
 }
 
 export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewProps) {
+  const [showPrintView, setShowPrintView] = useState(false);
+
   if (!isOpen) return null;
 
   const formatDate = (dateString: string | undefined) => {
@@ -39,6 +43,14 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
     }
   };
 
+  const handlePrint = () => {
+    setShowPrintView(true);
+  };
+
+  const handleClosePrintView = () => {
+    setShowPrintView(false);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
@@ -54,12 +66,21 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="h-6 w-6" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handlePrint}
+              className="text-blue-600 hover:text-blue-900 transition-colors p-2 rounded-md hover:bg-blue-50"
+              title="Print Client Information"
+            >
+              <Printer className="h-5 w-5" />
+            </button>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-md hover:bg-gray-100"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -186,8 +207,21 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Service Frequency</label>
-                    <p className="text-gray-900">{client.serviceFrequency}</p>
+                    <label className="text-sm font-medium text-gray-500">Service Frequencies</label>
+                    <div className="mt-2">
+                      {client.serviceFrequencies && Object.keys(client.serviceFrequencies).length > 0 ? (
+                        <div className="space-y-1">
+                          {Object.entries(client.serviceFrequencies).map(([service, frequency]) => (
+                            <div key={service} className="flex justify-between">
+                              <span className="text-sm text-gray-600">{service}:</span>
+                              <span className="text-sm font-medium text-gray-900">{frequency}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 text-sm">No frequencies set</p>
+                      )}
+                    </div>
                   </div>
                   
                   {client.tin && (
@@ -199,13 +233,39 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
                 </div>
                 
                 <div className="space-y-4">
-                  {client.taxTypesSelected && client.taxTypesSelected.length > 0 && (
+                  {client.directTaxSubcategories && client.directTaxSubcategories.length > 0 && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Tax Types Selected</label>
+                      <label className="text-sm font-medium text-gray-500">Direct Tax Subcategories</label>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {client.taxTypesSelected.map((taxType, index) => (
-                          <span key={index} className="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                        {client.directTaxSubcategories.map((subcategory: string, index: number) => (
+                          <span key={index} className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                            {subcategory}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {client.incomeTaxTypes && client.incomeTaxTypes.length > 0 && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Income Tax Types</label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {client.incomeTaxTypes.map((taxType: string, index: number) => (
+                          <span key={index} className="inline-flex px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
                             {taxType}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {client.indirectTaxSubcategories && client.indirectTaxSubcategories.length > 0 && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Indirect Tax Subcategories</label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {client.indirectTaxSubcategories.map((subcategory: string, index: number) => (
+                          <span key={index} className="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                            {subcategory}
                           </span>
                         ))}
                       </div>
@@ -216,6 +276,31 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
                     <div>
                       <label className="text-sm font-medium text-gray-500">Other Registrations</label>
                       <p className="text-gray-900">{client.otherRegistrations}</p>
+                    </div>
+                  )}
+
+                  {/* Tax Return Years Tracking */}
+                  {client.taxReturnYears && Object.keys(client.taxReturnYears).length > 0 && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Tax Return Years Submitted</label>
+                      <div className="mt-2 space-y-3">
+                        {Object.entries(client.taxReturnYears).map(([subcategory, years]) => (
+                          <div key={subcategory} className="border border-gray-200 rounded-lg p-3">
+                            <h4 className="text-sm font-medium text-gray-800 mb-2">{subcategory}</h4>
+                            {years && years.length > 0 ? (
+                              <div className="flex flex-wrap gap-1">
+                                {years.map(year => (
+                                  <span key={year} className="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                                    {year}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-gray-500 italic">No years submitted yet</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -480,6 +565,15 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
           </button>
         </div>
       </div>
+
+      {/* Print View Modal */}
+      {showPrintView && (
+        <PrintView
+          client={client}
+          isOpen={showPrintView}
+          onClose={handleClosePrintView}
+        />
+      )}
     </div>
   );
 }

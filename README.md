@@ -2,29 +2,36 @@
 
 A comprehensive client intake management system for MNR Associates, built with React, Node.js, and PostgreSQL. This system allows staff to collect detailed client information through a structured form and manage client data through an admin dashboard.
 
-## 🎉 **STABLE VERSION - v1.5.0**
+## 🎉 **STABLE VERSION - v1.6.0**
 
 **✅ FULLY WORKING & PRODUCTION READY**
 
 This is the stable, production-ready version that has been tested and verified to work in production.
 
 ### **Quick Status**
-- ✅ **Frontend**: Working (client.mnrlk.com)
-- ✅ **Backend**: Working (api.mnrlk.com) 
+- ✅ **Frontend**: Working (https://mnrlk.com)
+- ✅ **Backend**: Working (https://api.mnrlk.com) 
 - ✅ **Database**: Connected and operational
 - ✅ **Authentication**: JWT-based auth working
 - ✅ **Form Submission**: Complete client intake working
 - ✅ **Admin Dashboard**: View, edit, delete, export working
 - ✅ **Export**: Excel and CSV export working
+- ✅ **Print Functionality**: A4-optimized client reports
+- ✅ **Statistics Dashboard**: Real-time analytics and metrics
+- ✅ **Tax Year Tracking**: Complete tax return submission tracking
 
-### **Deployment**
-- **Use**: `docker-compose.coolify-v128.yml`
-- **Documentation**: See `STABLE_VERSION.md` for complete details
+### **Production Deployment**
+- **Configuration**: All URLs updated for production
+- **Scripts**: Automated deployment and verification scripts
+- **Documentation**: Complete production deployment guide
 
 ## 🚀 Features
 
 ### Client Intake Form
-- **6-Section Comprehensive Form** with validation
+- **5-Section Comprehensive Form** with validation (merged Sections B & C)
+- **Hierarchical Service Selection** with subcategories and frequencies
+- **Tax Year Tracking** for all tax services (2010-2025)
+- **Income Tax Types** (CIT, PIT, IIT) with individual year tracking
 - **Fill Sample Data Buttons** for easy testing
 - **Real-time Validation** with error handling
 - **Responsive Design** for all devices
@@ -32,8 +39,10 @@ This is the stable, production-ready version that has been tested and verified t
 
 ### Admin Dashboard
 - **Client Management** - View, search, and filter clients
+- **Statistics Dashboard** - Real-time analytics and metrics
 - **Detailed View** - Complete client information modal
 - **Edit Functionality** - Update client information with full form validation
+- **Print Functionality** - A4-optimized client reports
 - **Delete Protection** - Passcode-protected deletion with soft delete
 - **Export Functionality** - Excel and CSV export options
 - **User Authentication** - Role-based access control
@@ -78,29 +87,26 @@ This is the stable, production-ready version that has been tested and verified t
 - Nature of business and industry
 - Client priority level
 
-### Section B - Services Needed
-- Service type selection (multi-select)
-- Service frequency
-- TIN requirement (conditional)
-- Tax services (Direct/Indirect)
+### Section B - Services & Tax Profile (Merged)
+- Service type selection (Direct Tax, Indirect Tax, Accounts, Audit, HR Services, SLTDA, Trade License)
+- Direct Tax subcategories (Income Taxes with CIT/PIT/IIT, Capital Gain Tax)
+- Indirect Tax subcategories (VAT, SSCL, APIT, WHT/AIT)
+- Service frequency selection (Monthly, Quarterly, Annually)
+- Tax return year tracking (2010-2025) for each subcategory
+- TIN requirement and other registrations
 
-### Section C - Tax Profile
-- Registered tax types
-- Other registrations and notes
-- Compliance information
-
-### Section D - Secretarial & Related Parties
+### Section C - Secretarial & Related Parties
 - Company secretary (for companies)
 - Related parties (up to 4)
 - Registration and incorporation details
 - Financial information
 
-### Section E - RAMIS & Documents
+### Section D - RAMIS & Documents
 - RAMIS access status
 - Document availability tracking
 - Other document specifications
 
-### Section F - Financial Terms
+### Section E - Financial Terms
 - Credit limits and payment terms
 - Preferred currency
 - Additional notes
@@ -140,8 +146,8 @@ This is the stable, production-ready version that has been tested and verified t
    ```
 
 3. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
+   - Frontend: http://localhost:3000 (Development) / https://mnrlk.com (Production)
+   - Backend API: http://localhost:3001 (Development) / https://api.mnrlk.com (Production)
    - Database: localhost:5432
 
 4. **Login and start using**
@@ -291,19 +297,30 @@ npm run db:seed
 npx prisma studio
 ```
 
-## 🚀 Deployment
+## 🚀 Production Deployment
+
+### Quick Production Deployment
+```bash
+# Verify production configuration
+./verify-production.sh
+
+# Deploy to production
+./deploy-production.sh
+```
+
+### Production URLs
+- **Frontend**: https://mnrlk.com
+- **Backend API**: https://api.mnrlk.com
+- **Health Check**: https://api.mnrlk.com/health
+
+### Environment Configuration
+The application automatically detects the environment:
+- **Development**: Uses localhost URLs
+- **Production**: Uses mnrlk.com URLs
+- **Smart Detection**: Based on hostname and environment variables
 
 ### Docker Compose (Production)
 The application is containerized and ready for deployment with Docker Compose.
-
-### Coolify Deployment
-The system is designed to be deployed on Coolify with the provided `docker-compose.yml`.
-
-### Environment Setup
-1. Set up PostgreSQL database
-2. Configure environment variables
-3. Deploy using Docker Compose
-4. Access the application
 
 ## 📝 Usage Guide
 

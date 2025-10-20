@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getApiBaseUrl } from '../lib/apiConfig';
 
 interface User {
   id: string;
@@ -49,8 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
-        (window.location.hostname === 'client.mnrlk.com' ? 'https://api.mnrlk.com' : 'http://localhost:3001');
+      const API_BASE_URL = getApiBaseUrl();
       
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',

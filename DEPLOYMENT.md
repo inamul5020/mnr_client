@@ -1,40 +1,70 @@
-# MNR Client Intake System - Deployment Guide
+# MNR Client Intake System - Production Deployment Guide
 
-## Quick Start with Docker Compose
+## 🚀 Quick Production Deployment
 
-### Prerequisites
-- Docker and Docker Compose installed
-- At least 2GB RAM available
-- Ports 3000 and 5433 available
-
-### 1. Clone and Setup
+### Automated Deployment Scripts
 ```bash
-cd /root/mnr_client
+# Verify production configuration
+./verify-production.sh
+
+# Deploy to production
+./deploy-production.sh
 ```
 
-### 2. Start the Application
+### Manual Production Setup
 ```bash
-docker-compose up -d
+# 1. Clone repository
+git clone https://github.com/inamul5020/mnr_client.git
+cd mnr_client
+
+# 2. Verify production configuration
+./verify-production.sh
+
+# 3. Deploy with Docker Compose
+docker-compose up --build -d
+
+# 4. Check service status
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 ```
 
-This will start:
-- PostgreSQL database on port 5433
-- Backend API on port 3001
-- Frontend on port 3000
+## 🌐 Production URLs
 
-### 3. Initialize Database
+### Application URLs
+- **Frontend**: https://mnrlk.com
+- **Backend API**: https://api.mnrlk.com
+- **Health Check**: https://api.mnrlk.com/health
+- **Authentication**: https://api.mnrlk.com/api/auth/login
+
+### Development URLs (for reference)
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:3001
+- **Database**: localhost:5433
+
+## 🔧 Production Configuration
+
+### Environment Variables
+The application automatically detects the environment based on hostname and environment variables:
+
+#### Frontend Configuration
 ```bash
-# Generate Prisma client
-docker-compose exec backend npx prisma generate
-
-# Push schema to database
-docker-compose exec backend npx prisma db push
+VITE_API_URL=https://api.mnrlk.com
+NODE_ENV=production
 ```
 
-### 4. Access the Application
-- **Client Form**: http://localhost:3000
-- **Admin Dashboard**: http://localhost:3000/admin
-- **API Health Check**: http://localhost:3001/health
+#### Backend Configuration
+```bash
+DATABASE_URL=postgresql://mnr_user:mnr_password@postgres:5432/mnr_client_intake
+NODE_ENV=production
+PORT=3001
+CORS_ORIGIN=https://mnrlk.com
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+```
+
+### Smart Environment Detection
+The application includes smart detection that automatically chooses the correct API URL:
+- **Development** (localhost, 127.0.0.1, local networks): Uses `http://localhost:3001`
+- **Production** (mnrlk.com, mnr domains): Uses `https://api.mnrlk.com`
+- **Default**: Falls back to production URL
 
 ## Coolify Deployment
 
@@ -62,10 +92,10 @@ Configure these in Coolify:
 **Backend:**
 - `DATABASE_URL=postgresql://mnr_user:your-secure-password@postgres:5432/mnr_client_intake`
 - `NODE_ENV=production`
-- `CORS_ORIGIN=https://your-domain.com`
+- `CORS_ORIGIN=https://mnrlk.com`
 
 **Frontend:**
-- `VITE_API_URL=https://your-api-domain.com`
+- `VITE_API_URL=https://api.mnrlk.com`
 
 ## Production Considerations
 

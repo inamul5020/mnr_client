@@ -42,6 +42,65 @@ const exceljs_1 = __importDefault(require("exceljs"));
 const createCsvWriter = __importStar(require("csv-writer"));
 const router = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
+// GET /api/export/excel-all - Export all clients to Excel
+router.get('/excel-all', async (req, res) => {
+    try {
+        const clientIntakes = await prisma.clientIntake.findMany({
+            include: {
+                relatedParties: true
+            },
+            orderBy: {
+                submittedAt: 'desc'
+            }
+        });
+        const workbook = new exceljs_1.default.Workbook();
+        const sheet = workbook.addWorksheet('All Client Intakes');
+        // Headers
+        sheet.columns = [
+            { header: 'Legal Name', key: 'legalName', width: 25 },
+            { header: 'Type', key: 'type', width: 15 },
+            { header: 'Owner', key: 'ownerName', width: 25 },
+            { header: 'Email', key: 'email', width: 30 },
+            { header: 'Phone', key: 'phoneMobile', width: 20 },
+            { header: 'Services', key: 'servicesSelected', width: 30 },
+            { header: 'TIN', key: 'tin', width: 15 },
+            { header: 'RAMIS', key: 'ramisStatus', width: 15 },
+            { header: 'Submitted', key: 'submittedAt', width: 20 }
+        ];
+        // Add data rows
+        clientIntakes.forEach(client => {
+            sheet.addRow({
+                legalName: client.legalName,
+                type: client.type,
+                ownerName: client.ownerName,
+                email: client.email,
+                phoneMobile: client.phoneMobile,
+                servicesSelected: client.servicesSelected.join(', '),
+                tin: client.tin || '',
+                ramisStatus: client.ramisStatus,
+                submittedAt: client.submittedAt.toLocaleDateString()
+            });
+        });
+        // Style the header row
+        sheet.getRow(1).font = { bold: true };
+        sheet.getRow(1).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFE6E6FA' }
+        };
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="all-client-intakes-${new Date().toISOString().split('T')[0]}.xlsx"`);
+        await workbook.xlsx.write(res);
+        res.end();
+    }
+    catch (error) {
+        console.error('Error exporting all to Excel:', error);
+        res.status(500).json({
+            error: 'Failed to export all to Excel',
+            message: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+});
 // GET /api/export/excel/:id - Export single client to Excel
 router.get('/excel/:id', async (req, res) => {
     try {
@@ -80,12 +139,14 @@ router.get('/excel/:id', async (req, res) => {
         clientSheet.addRow({ field: 'Nature of Business', value: clientIntake.natureOfBusiness });
         clientSheet.addRow({ field: 'Industry', value: clientIntake.industry || '' });
         clientSheet.addRow({ field: 'Client Priority', value: clientIntake.clientPriority });
-        // Section B - Services
+        // Section B - Services & Tax Profile (merged)
         clientSheet.addRow({ field: 'Services Selected', value: clientIntake.servicesSelected.join(', ') });
-        clientSheet.addRow({ field: 'Service Frequency', value: clientIntake.serviceFrequency || '' });
+        clientSheet.addRow({ field: 'Direct Tax Subcategories', value: clientIntake.directTaxSubcategories?.join(', ') || '' });
+        clientSheet.addRow({ field: 'Indirect Tax Subcategories', value: clientIntake.indirectTaxSubcategories?.join(', ') || '' });
+        clientSheet.addRow({ field: 'Income Tax Types', value: clientIntake.incomeTaxTypes?.join(', ') || '' });
+        clientSheet.addRow({ field: 'Service Frequencies', value: JSON.stringify(clientIntake.serviceFrequencies || {}) });
+        clientSheet.addRow({ field: 'Tax Return Years', value: JSON.stringify(clientIntake.taxReturnYears || {}) });
         clientSheet.addRow({ field: 'TIN', value: clientIntake.tin || '' });
-        // Section C - Tax Profile
-        clientSheet.addRow({ field: 'Tax Types Selected', value: clientIntake.taxTypesSelected.join(', ') });
         clientSheet.addRow({ field: 'Other Registrations', value: clientIntake.otherRegistrations || '' });
         // Section D - Company Details
         clientSheet.addRow({ field: 'Company Secretary', value: clientIntake.companySecretary || '' });
@@ -160,8 +221,8 @@ router.get('/excel/:id', async (req, res) => {
         });
     }
 });
-// GET /api/export/excel/all - Export all clients to Excel
-router.get('/excel/all', async (req, res) => {
+// GET /api/export/csv-all - Export all clients to CSV
+router.get('/csv-all', async (req, res) => {
     try {
         const clientIntakes = await prisma.clientIntake.findMany({
             include: {
@@ -171,50 +232,37 @@ router.get('/excel/all', async (req, res) => {
                 submittedAt: 'desc'
             }
         });
-        const workbook = new exceljs_1.default.Workbook();
-        const sheet = workbook.addWorksheet('All Client Intakes');
-        // Headers
-        sheet.columns = [
-            { header: 'Legal Name', key: 'legalName', width: 25 },
-            { header: 'Type', key: 'type', width: 15 },
-            { header: 'Owner', key: 'ownerName', width: 25 },
-            { header: 'Email', key: 'email', width: 30 },
-            { header: 'Phone', key: 'phoneMobile', width: 20 },
-            { header: 'Services', key: 'servicesSelected', width: 30 },
-            { header: 'TIN', key: 'tin', width: 15 },
-            { header: 'RAMIS', key: 'ramisStatus', width: 15 },
-            { header: 'Submitted', key: 'submittedAt', width: 20 }
-        ];
-        // Add data rows
-        clientIntakes.forEach(client => {
-            sheet.addRow({
-                legalName: client.legalName,
-                type: client.type,
-                ownerName: client.ownerName,
-                email: client.email,
-                phoneMobile: client.phoneMobile,
-                servicesSelected: client.servicesSelected.join(', '),
-                tin: client.tin || '',
-                ramisStatus: client.ramisStatus,
-                submittedAt: client.submittedAt.toLocaleDateString()
-            });
+        const csvWriter = createCsvWriter.createObjectCsvWriter({
+            path: 'temp-all-clients-export.csv',
+            header: [
+                { id: 'legalName', title: 'Legal Name' },
+                { id: 'type', title: 'Type' },
+                { id: 'ownerName', title: 'Owner Name' },
+                { id: 'email', title: 'Email' },
+                { id: 'phoneMobile', title: 'Mobile Phone' },
+                { id: 'servicesSelected', title: 'Services Selected' },
+                { id: 'tin', title: 'TIN' },
+                { id: 'ramisStatus', title: 'RAMIS Status' },
+                { id: 'submittedAt', title: 'Submitted At' }
+            ]
         });
-        // Style the header row
-        sheet.getRow(1).font = { bold: true };
-        sheet.getRow(1).fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFE6E6FA' }
-        };
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename="all-client-intakes-${new Date().toISOString().split('T')[0]}.xlsx"`);
-        await workbook.xlsx.write(res);
-        res.end();
+        const csvData = clientIntakes.map(client => ({
+            ...client,
+            servicesSelected: client.servicesSelected.join(', '),
+            submittedAt: client.submittedAt.toLocaleDateString()
+        }));
+        await csvWriter.writeRecords(csvData);
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="all-client-intakes-${new Date().toISOString().split('T')[0]}.csv"`);
+        const fs = require('fs');
+        const csvContent = fs.readFileSync('temp-all-clients-export.csv');
+        res.send(csvContent);
+        fs.unlinkSync('temp-all-clients-export.csv');
     }
     catch (error) {
-        console.error('Error exporting all to Excel:', error);
+        console.error('Error exporting all to CSV:', error);
         res.status(500).json({
-            error: 'Failed to export all to Excel',
+            error: 'Failed to export all to CSV',
             message: error instanceof Error ? error.message : 'Unknown error'
         });
     }
@@ -260,9 +308,12 @@ router.get('/csv/:id', async (req, res) => {
                 { id: 'industry', title: 'Industry' },
                 { id: 'clientPriority', title: 'Client Priority' },
                 { id: 'servicesSelected', title: 'Services Selected' },
-                { id: 'serviceFrequency', title: 'Service Frequency' },
+                { id: 'directTaxSubcategories', title: 'Direct Tax Subcategories' },
+                { id: 'indirectTaxSubcategories', title: 'Indirect Tax Subcategories' },
+                { id: 'incomeTaxTypes', title: 'Income Tax Types' },
+                { id: 'serviceFrequencies', title: 'Service Frequencies' },
+                { id: 'taxReturnYears', title: 'Tax Return Years' },
                 { id: 'tin', title: 'TIN' },
-                { id: 'taxTypesSelected', title: 'Tax Types Selected' },
                 { id: 'otherRegistrations', title: 'Other Registrations' },
                 { id: 'companySecretary', title: 'Company Secretary' },
                 { id: 'registrationNumber', title: 'Registration Number' },
@@ -310,7 +361,11 @@ router.get('/csv/:id', async (req, res) => {
         const csvData = {
             ...clientIntake,
             servicesSelected: clientIntake.servicesSelected.join(', '),
-            taxTypesSelected: clientIntake.taxTypesSelected.join(', '),
+            directTaxSubcategories: clientIntake.directTaxSubcategories?.join(', ') || '',
+            indirectTaxSubcategories: clientIntake.indirectTaxSubcategories?.join(', ') || '',
+            incomeTaxTypes: clientIntake.incomeTaxTypes?.join(', ') || '',
+            serviceFrequencies: JSON.stringify(clientIntake.serviceFrequencies || {}),
+            taxReturnYears: JSON.stringify(clientIntake.taxReturnYears || {}),
             incorporationDate: clientIntake.incorporationDate?.toLocaleDateString() || '',
             submittedAt: clientIntake.submittedAt.toLocaleString(),
             docsBusinessReg: clientIntake.docsBusinessReg ? 'Yes' : 'No',
@@ -333,52 +388,6 @@ router.get('/csv/:id', async (req, res) => {
         console.error('Error exporting to CSV:', error);
         res.status(500).json({
             error: 'Failed to export to CSV',
-            message: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
-});
-// GET /api/export/csv/all - Export all clients to CSV
-router.get('/csv/all', async (req, res) => {
-    try {
-        const clientIntakes = await prisma.clientIntake.findMany({
-            include: {
-                relatedParties: true
-            },
-            orderBy: {
-                submittedAt: 'desc'
-            }
-        });
-        const csvWriter = createCsvWriter.createObjectCsvWriter({
-            path: 'temp-all-clients-export.csv',
-            header: [
-                { id: 'legalName', title: 'Legal Name' },
-                { id: 'type', title: 'Type' },
-                { id: 'ownerName', title: 'Owner Name' },
-                { id: 'email', title: 'Email' },
-                { id: 'phoneMobile', title: 'Mobile Phone' },
-                { id: 'servicesSelected', title: 'Services Selected' },
-                { id: 'tin', title: 'TIN' },
-                { id: 'ramisStatus', title: 'RAMIS Status' },
-                { id: 'submittedAt', title: 'Submitted At' }
-            ]
-        });
-        const csvData = clientIntakes.map(client => ({
-            ...client,
-            servicesSelected: client.servicesSelected.join(', '),
-            submittedAt: client.submittedAt.toLocaleDateString()
-        }));
-        await csvWriter.writeRecords(csvData);
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', `attachment; filename="all-client-intakes-${new Date().toISOString().split('T')[0]}.csv"`);
-        const fs = require('fs');
-        const csvContent = fs.readFileSync('temp-all-clients-export.csv');
-        res.send(csvContent);
-        fs.unlinkSync('temp-all-clients-export.csv');
-    }
-    catch (error) {
-        console.error('Error exporting all to CSV:', error);
-        res.status(500).json({
-            error: 'Failed to export all to CSV',
             message: error instanceof Error ? error.message : 'Unknown error'
         });
     }

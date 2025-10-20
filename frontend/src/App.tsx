@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ClientIntakeForm } from './pages/ClientIntakeForm'
-import { AdminDashboard } from './pages/AdminDashboard'
+import { Dashboard } from './pages/Dashboard'
+import { ClientList } from './pages/ClientList'
 import { SuccessPage } from './pages/SuccessPage'
 import { LoginForm } from './components/LoginForm'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { HealthCheck } from './components/HealthCheck'
-import { LogOut, User, Users, Menu, X } from 'lucide-react'
+import { LogOut, User, Users, Menu, X, BarChart3 } from 'lucide-react'
 import { useState } from 'react'
 
 // Protected Route Component
@@ -57,8 +58,15 @@ const AuthenticatedHeader = () => {
               href="/admin"
               className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
             >
-              <Users className="h-4 w-4 mr-1" />
+              <BarChart3 className="h-4 w-4 mr-1" />
               Dashboard
+            </a>
+            <a
+              href="/admin/clients"
+              className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
+            >
+              <Users className="h-4 w-4 mr-1" />
+              Client List
             </a>
           </nav>
 
@@ -114,8 +122,16 @@ const AuthenticatedHeader = () => {
                 className="text-gray-600 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium flex items-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Users className="h-4 w-4 mr-2" />
+                <BarChart3 className="h-4 w-4 mr-2" />
                 Dashboard
+              </a>
+              <a
+                href="/admin/clients"
+                className="text-gray-600 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium flex items-center"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Client List
               </a>
               <button
                 onClick={() => {
@@ -149,7 +165,8 @@ function App() {
                 <main>
                   <Routes>
                     <Route path="/" element={<ClientIntakeForm />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin" element={<Dashboard />} />
+                    <Route path="/admin/clients" element={<ClientList />} />
                     <Route path="/success" element={<SuccessPage />} />
                   </Routes>
                 </main>

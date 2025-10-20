@@ -1,8 +1,6 @@
 import axios from 'axios';
-import { ClientIntake, ApiResponse, PaginatedResponse } from '../types';
-
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
-  (window.location.hostname === 'client.mnrlk.com' ? 'https://api.mnrlk.com' : 'http://localhost:3001');
+import { ClientIntake, ApiResponse, PaginatedResponse, Statistics } from '../types';
+import { API_BASE_URL } from './apiConfig';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
@@ -94,6 +92,14 @@ export const clientIntakeApi = {
     const response = await api.delete(`/intake/${id}`, {
       data: { passcode }
     });
+    return response.data;
+  }
+};
+
+export const statsApi = {
+  // Get statistics data
+  getStats: async (): Promise<ApiResponse<Statistics>> => {
+    const response = await api.get('/stats');
     return response.data;
   }
 };

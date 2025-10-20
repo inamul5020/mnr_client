@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { getApiBaseUrl } from '../lib/apiConfig';
 
 export function HealthCheck() {
   const [status, setStatus] = useState<'checking' | 'healthy' | 'error'>('checking');
@@ -9,8 +10,7 @@ export function HealthCheck() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
-          (window.location.hostname === 'client.mnrlk.com' ? 'https://api.mnrlk.com' : 'http://localhost:3001');
+        const API_BASE_URL = getApiBaseUrl();
         
         setApiUrl(API_BASE_URL);
         
