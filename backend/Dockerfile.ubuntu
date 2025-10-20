@@ -1,0 +1,54 @@
+# Ubuntu-based Backend Dockerfile (more reliable than Alpine)
+FROM ubuntu:22.04 AS builder
+
+WORKDIR /app
+
+# Install Node.js via NodeSource repository (more reliable)
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs git python3 make g++ && \
+    node --version && \
+    npm --version
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm ci --no-audit --no-fund
+
+# Copy source code
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM ubuntu:22.04 AS runner
+
+WORKDIR /app
+
+# Install Node.js for runtime
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    node --version && \
+    npm --version
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+
+EXPOSE 3001
+ENV PORT=3001
+ENV NODE_ENV=production
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+CMD ["node", "dist/index.js"]
