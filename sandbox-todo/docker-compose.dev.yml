@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: todo_demo
+      POSTGRES_USER: mnr_user
+      POSTGRES_PASSWORD: mnr_password
+    ports:
+      - "5440:5432"
+    volumes:
+      - todo_pg:/var/lib/postgresql/data
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.ubuntu
+    environment:
+      PORT: 4001
+      DATABASE_URL: postgresql://mnr_user:mnr_password@db:5432/todo_demo
+    ports:
+      - "4001:4001"
+    depends_on:
+      - db
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.ubuntu
+    ports:
+      - "3006:3000"
+    depends_on:
+      - backend
+volumes:
+  todo_pg:

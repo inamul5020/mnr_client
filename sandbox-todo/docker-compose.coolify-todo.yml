@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: todo_demo
+      POSTGRES_USER: mnr_user
+      POSTGRES_PASSWORD: mnr_password
+    volumes:
+      - todo_pg:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    labels:
+      - "coolify.name=todo-db"
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.ubuntu
+    environment:
+      PORT: 4001
+      DATABASE_URL: postgresql://mnr_user:mnr_password@db:5432/todo_demo
+    depends_on:
+      - db
+    expose:
+      - "4001"
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=todo-backend"
+      - "coolify.port=4001"
+      - "coolify.healthcheck=/health"
+      - "coolify.domain=api.mnrlk.com"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.ubuntu
+    depends_on:
+      - backend
+    expose:
+      - "3000"
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=todo-frontend"
+      - "coolify.port=3000"
+      - "coolify.domain=client.mnrlk.com"
+volumes:
+  todo_pg:
