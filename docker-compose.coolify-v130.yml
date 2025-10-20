@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mnr-client-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mnr_client_intake}
+      POSTGRES_USER: ${POSTGRES_USER:-mnr_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mnr_password}
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mnr_user -d mnr_client_intake || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=mnr-client-db"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.alpine
+    container_name: mnr-client-backend
+    restart: unless-stopped
+    expose:
+      - "3001"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-mnr_user}:${POSTGRES_PASSWORD:-mnr_password}@postgres:5432/${POSTGRES_DB:-mnr_client_intake}
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-3001}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://client.mnrlk.com}
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=mnr-client-backend"
+      - "coolify.port=3001"
+      - "coolify.healthcheck=/health"
+      - "coolify.domain=api.mnrlk.com"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.alpine-serve
+    container_name: mnr-client-frontend
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-https://api.mnrlk.com}
+    depends_on:
+      - backend
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=mnr-client-frontend"
+      - "coolify.port=3000"
+      - "coolify.healthcheck=/"
+      - "coolify.domain=client.mnrlk.com"
+
+volumes:
+  postgres_data:
+    driver: local
+
+

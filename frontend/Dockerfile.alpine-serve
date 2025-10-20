@@ -1,0 +1,31 @@
+# Serve static files with Node installed via Alpine packages (no Docker Hub base pull)
+FROM alpine:3.19
+
+WORKDIR /app
+
+# Install Node.js, npm and git from Alpine repos
+RUN apk add --no-cache nodejs npm git
+
+# Copy package files first for better caching
+COPY package.json package-lock.json* ./
+
+# Install deps
+RUN npm ci --no-audit --no-fund
+
+# Copy source
+COPY . .
+
+# Build
+ENV NODE_ENV=production
+# Allow override at build time or runtime; default to production API
+ARG VITE_API_URL_ARG=https://api.mnrlk.com
+ENV VITE_API_URL=${VITE_API_URL_ARG}
+RUN npm run build
+
+# Install a tiny HTTP server via npm (serve)
+RUN npm install -g serve
+
+EXPOSE 3000
+CMD ["serve", "-s", "dist", "-l", "3000"]
+
+
