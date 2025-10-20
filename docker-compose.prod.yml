@@ -30,11 +30,11 @@ services:
     container_name: mnr-client-backend-prod
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "3003:3003"
     environment:
       - DATABASE_URL=postgresql://mnr_user:${POSTGRES_PASSWORD:-mnr_password}@postgres:5432/mnr_client_intake
       - NODE_ENV=production
-      - PORT=3001
+      - PORT=3003
       - CORS_ORIGIN=${CORS_ORIGIN:-https://mnrlk.com}
       - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
     depends_on:
