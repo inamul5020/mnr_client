@@ -3,13 +3,19 @@
 
 export const getApiBaseUrl = (): string => {
   // Check for environment variable first (highest priority)
-  if ((import.meta as any).env?.VITE_API_URL) {
-    console.log('Using VITE_API_URL:', (import.meta as any).env.VITE_API_URL);
-    return (import.meta as any).env.VITE_API_URL;
+  const envUrl = (import.meta as any).env?.VITE_API_URL as string | undefined;
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  if (envUrl) {
+    // SAFEGUARD: If running on mnrlk.com but env points to localhost, override to production
+    if ((hostname.includes('mnrlk.com') || hostname.includes('mnr')) && envUrl.includes('localhost')) {
+      console.log('Overriding localhost VITE_API_URL on production domain -> https://api.mnrlk.com');
+      return 'https://api.mnrlk.com';
+    }
+    console.log('Using VITE_API_URL:', envUrl);
+    return envUrl;
   }
   
   // Auto-detect based on current hostname
-  const hostname = window.location.hostname;
   console.log('Detected hostname:', hostname);
   
   // Development environments
