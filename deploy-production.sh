@@ -31,7 +31,7 @@ if grep -q "CORS_ORIGIN=https://mnrlk.com" docker-compose.yml; then
 else
     echo "❌ Docker Compose: Not configured for production"
     echo "   Updating to production URLs..."
-    sed -i 's|CORS_ORIGIN=http://localhost:3000|CORS_ORIGIN=https://mnrlk.com|g' docker-compose.yml
+    sed -i 's|CORS_ORIGIN=http://localhost:3003|CORS_ORIGIN=https://mnrlk.com|g' docker-compose.yml
     sed -i 's|VITE_API_URL=http://localhost:3001|VITE_API_URL=https://api.mnrlk.com|g' docker-compose.yml
     echo "✅ Docker Compose: Updated to production URLs"
 fi
@@ -42,7 +42,7 @@ if grep -q "origin: process.env.CORS_ORIGIN || 'https://mnrlk.com'" backend/src/
 else
     echo "❌ Backend CORS: Not configured for production"
     echo "   Updating to production origin..."
-    sed -i "s|origin: process.env.CORS_ORIGIN || 'http://localhost:3000'|origin: process.env.CORS_ORIGIN || 'https://mnrlk.com'|g" backend/src/index.ts
+    sed -i "s|origin: process.env.CORS_ORIGIN || 'http://localhost:3003'|origin: process.env.CORS_ORIGIN || 'https://mnrlk.com'|g" backend/src/index.ts
     echo "✅ Backend CORS: Updated to production origin"
 fi
 
@@ -51,8 +51,9 @@ echo "🔧 Production Configuration Summary:"
 echo "===================================="
 echo "Frontend API URL: https://api.mnrlk.com"
 echo "Backend CORS Origin: https://mnrlk.com"
-echo "Database: Internal Docker network"
-echo "Environment: Production"
+echo "Frontend Access: http://localhost:3003"
+echo "Backend API: http://localhost:3001"
+echo "Health Check: http://localhost:3001/health"
 
 echo ""
 echo "🚀 Starting Production Deployment..."

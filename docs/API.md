@@ -1,15 +1,15 @@
 # API Documentation
 
-## Base URL
+## Base URLs
 
-### Production
-```
-https://api.mnrlk.com/api
-```
-
-### Development
+### Development Environment
 ```
 http://localhost:3001/api
+```
+
+### Production Environment
+```
+https://api.mnrlk.com/api
 ```
 
 ## Authentication

@@ -1,30 +1,27 @@
 # MNR Client Intake System - Production Deployment Guide
 
-## 🚀 Quick Production Deployment
+## 🚀 Multi-Environment Quick Start
 
-### Automated Deployment Scripts
+### Development Environment
 ```bash
-# Verify production configuration
-./verify-production.sh
+# Start development environment
+./start-dev.sh
 
-# Deploy to production
-./deploy-production.sh
+# Access URLs
+Frontend: http://localhost:3003
+Backend API: http://localhost:3001
+Health Check: http://localhost:3001/health
 ```
 
-### Manual Production Setup
+### Production Environment
 ```bash
-# 1. Clone repository
-git clone https://github.com/inamul5020/mnr_client.git
-cd mnr_client
+# Start production environment
+./start-prod.sh
 
-# 2. Verify production configuration
-./verify-production.sh
-
-# 3. Deploy with Docker Compose
-docker-compose up --build -d
-
-# 4. Check service status
-docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+# Access URLs (configure reverse proxy)
+Frontend: https://mnrlk.com
+Backend API: https://api.mnrlk.com
+Health Check: https://api.mnrlk.com/health
 ```
 
 ## 🌐 Production URLs

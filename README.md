@@ -20,10 +20,11 @@ This is the stable, production-ready version that has been tested and verified t
 - ✅ **Statistics Dashboard**: Real-time analytics and metrics
 - ✅ **Tax Year Tracking**: Complete tax return submission tracking
 
-### **Production Deployment**
-- **Configuration**: All URLs updated for production
-- **Scripts**: Automated deployment and verification scripts
-- **Documentation**: Complete production deployment guide
+### **Multi-Environment Setup**
+- **Development**: Localhost configuration (ports 3003, 3001, 5433)
+- **Production**: Production URLs (https://mnrlk.com, https://api.mnrlk.com)
+- **Scripts**: Automated environment switching scripts
+- **Documentation**: Complete multi-environment deployment guide
 
 ## 🚀 Features
 
