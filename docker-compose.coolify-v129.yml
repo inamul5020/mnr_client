@@ -50,11 +50,11 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.simple-stable
+      dockerfile: Dockerfile.serve
     container_name: mnr-client-frontend
     restart: unless-stopped
     expose:
-      - "80"
+      - "3000"
     environment:
       - VITE_API_URL=${VITE_API_URL:-https://api.mnrlk.com}
     depends_on:
@@ -62,7 +62,7 @@ services:
     labels:
       - "coolify.managed=true"
       - "coolify.name=mnr-client-frontend"
-      - "coolify.port=80"
+      - "coolify.port=3000"
       - "coolify.healthcheck=/"
       - "coolify.domain=client.mnrlk.com"
 
