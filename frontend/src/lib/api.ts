@@ -104,8 +104,26 @@ export const clientIntakeApi = {
 export const statsApi = {
   // Get statistics data
   getStats: async (): Promise<ApiResponse<Statistics>> => {
-    const response = await api.get('/stats');
-    return response.data;
+    try {
+      const response = await api.get('/stats');
+      return response.data;
+    } catch (error: any) {
+      // If stats endpoint is not available in current backend build, return safe defaults
+      if (error?.response?.status === 404) {
+        const defaultStats: Statistics = {
+          totalClients: 0,
+          taxClients: 0,
+          serviceBreakdown: [],
+          priorityDistribution: [],
+          ramisStatusBreakdown: [],
+          recentClients: 0,
+          directTaxCount: 0,
+          indirectTaxCount: 0
+        };
+        return { success: true, data: defaultStats } as ApiResponse<Statistics>;
+      }
+      return { success: false, error: 'Failed to fetch statistics' } as ApiResponse<Statistics>;
+    }
   }
 };
 
