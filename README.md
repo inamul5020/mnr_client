@@ -333,6 +333,32 @@ The application automatically detects the environment:
 ### Docker Compose (Production)
 The application is containerized and ready for deployment with Docker Compose.
 
+### Coolify Environment Variables (Working Example)
+When deploying via Coolify, configure the following environment variables for a successful production run (as validated in production):
+
+```
+SERVICE_FQDN_BACKEND=api.mnrlk.com
+SERVICE_FQDN_FRONTEND=client.mnrlk.com
+SERVICE_URL_BACKEND=https://api.mnrlk.com
+SERVICE_URL_FRONTEND=https://client.mnrlk.com
+VITE_API_URL=https://api.mnrlk.com
+
+# Backend runtime
+CORS_ORIGIN=https://client.mnrlk.com
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+NODE_ENV=production
+PORT=3001
+
+# Postgres (internal service)
+POSTGRES_DB=mnr_client_intake
+POSTGRES_USER=mnr_user
+POSTGRES_PASSWORD=mnr_password
+```
+
+Notes:
+- Coolify handles networking; do not publish host ports in Compose, use `expose` and Coolify labels.
+- Ensure DNS for `client.mnrlk.com` and `api.mnrlk.com` points to your Coolify server IP.
+
 ## 📝 Usage Guide
 
 ### For Staff Users

@@ -94,6 +94,32 @@ Configure these in Coolify:
 **Frontend:**
 - `VITE_API_URL=https://api.mnrlk.com`
 
+### 4. Verified Working Coolify Variables (Full List)
+Use this complete, validated set in Coolify for production deployments of this app:
+
+```
+SERVICE_FQDN_BACKEND=api.mnrlk.com
+SERVICE_FQDN_FRONTEND=client.mnrlk.com
+SERVICE_URL_BACKEND=https://api.mnrlk.com
+SERVICE_URL_FRONTEND=https://client.mnrlk.com
+VITE_API_URL=https://api.mnrlk.com
+
+# Backend runtime
+CORS_ORIGIN=https://client.mnrlk.com
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+NODE_ENV=production
+PORT=3001
+
+# Postgres (internal service)
+POSTGRES_DB=mnr_client_intake
+POSTGRES_USER=mnr_user
+POSTGRES_PASSWORD=mnr_password
+```
+
+Notes:
+- Set the HTTP Port in Coolify to match container ports (frontend 3000 or 80 depending on Dockerfile, backend 3001).
+- Do not publish host ports in Compose; rely on `expose` and Coolify routing labels.
+
 ## Production Considerations
 
 ### Security
