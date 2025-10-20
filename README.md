@@ -146,12 +146,12 @@ This is the stable, production-ready version that has been tested and verified t
    ```
 
 3. **Access the application**
-   - Frontend: http://localhost:3000 (Development) / https://mnrlk.com (Production)
+   - Frontend: http://localhost:3003 (Development) / https://mnrlk.com (Production)
    - Backend API: http://localhost:3001 (Development) / https://api.mnrlk.com (Production)
-   - Database: localhost:5432
+   - Database: localhost:5433
 
 4. **Login and start using**
-   - Go to http://localhost:3000
+   - Go to http://localhost:3003
    - Login with any test account
    - Submit forms or access admin dashboard
 

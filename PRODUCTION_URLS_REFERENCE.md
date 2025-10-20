@@ -8,7 +8,7 @@
 VITE_API_URL=http://localhost:3001
 
 # Backend CORS Origin
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:3003
 
 # Database URL
 DATABASE_URL=postgresql://mnr_user:mnr_password@localhost:5433/mnr_client_intake
@@ -79,11 +79,11 @@ environment:
 sed -i 's|ENV VITE_API_URL=https://api.mnrlk.com|ENV VITE_API_URL=http://localhost:3001|g' frontend/Dockerfile
 
 # Update main docker-compose.yml
-sed -i 's|CORS_ORIGIN=https://mnrlk.com|CORS_ORIGIN=http://localhost:3000|g' docker-compose.yml
+sed -i 's|CORS_ORIGIN=https://mnrlk.com|CORS_ORIGIN=http://localhost:3003|g' docker-compose.yml
 sed -i 's|VITE_API_URL=https://api.mnrlk.com|VITE_API_URL=http://localhost:3001|g' docker-compose.yml
 
 # Update backend CORS
-sed -i 's|origin: process.env.CORS_ORIGIN || '\''https://mnrlk.com'\''|origin: process.env.CORS_ORIGIN || '\''http://localhost:3000'\''|g' backend/src/index.ts
+sed -i 's|origin: process.env.CORS_ORIGIN || '\''https://mnrlk.com'\''|origin: process.env.CORS_ORIGIN || '\''http://localhost:3003'\''|g' backend/src/index.ts
 
 # Rebuild frontend
 docker-compose build --no-cache frontend
@@ -96,11 +96,11 @@ docker-compose up -d --force-recreate frontend
 sed -i 's|ENV VITE_API_URL=http://localhost:3001|ENV VITE_API_URL=https://api.mnrlk.com|g' frontend/Dockerfile
 
 # Update main docker-compose.yml
-sed -i 's|CORS_ORIGIN=http://localhost:3000|CORS_ORIGIN=https://mnrlk.com|g' docker-compose.yml
+sed -i 's|CORS_ORIGIN=http://localhost:3003|CORS_ORIGIN=https://mnrlk.com|g' docker-compose.yml
 sed -i 's|VITE_API_URL=http://localhost:3001|VITE_API_URL=https://api.mnrlk.com|g' docker-compose.yml
 
 # Update backend CORS
-sed -i 's|origin: process.env.CORS_ORIGIN || '\''http://localhost:3000'\''|origin: process.env.CORS_ORIGIN || '\''https://mnrlk.com'\''|g' backend/src/index.ts
+sed -i 's|origin: process.env.CORS_ORIGIN || '\''http://localhost:3003'\''|origin: process.env.CORS_ORIGIN || '\''https://mnrlk.com'\''|g' backend/src/index.ts
 
 # Rebuild frontend
 docker-compose build --no-cache frontend

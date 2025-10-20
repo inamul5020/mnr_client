@@ -82,8 +82,8 @@ echo "🏥 Health Check:"
 echo "================"
 
 # Check frontend
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200"; then
-    echo "✅ Frontend: Healthy (http://localhost:3000)"
+if curl -s -o /dev/null -w "%{http_code}" http://localhost:3003 | grep -q "200"; then
+    echo "✅ Frontend: Healthy (http://localhost:3003)"
 else
     echo "❌ Frontend: Not responding"
 fi
@@ -107,7 +107,7 @@ echo "🎉 Production Deployment Complete!"
 echo "=================================="
 echo ""
 echo "🌐 Access URLs:"
-echo "Frontend: http://localhost:3000"
+echo "Frontend: http://localhost:3003"
 echo "Backend API: http://localhost:3001"
 echo "Health Check: http://localhost:3001/health"
 echo ""

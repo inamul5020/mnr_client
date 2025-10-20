@@ -36,7 +36,7 @@ docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 - **Authentication**: https://api.mnrlk.com/api/auth/login
 
 ### Development URLs (for reference)
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:3003
 - **Backend API**: http://localhost:3001
 - **Database**: localhost:5433
 

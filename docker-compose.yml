@@ -52,7 +52,7 @@ services:
     container_name: mnr-client-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "3003:80"
     environment:
       - VITE_API_URL=https://api.mnrlk.com
     depends_on:
