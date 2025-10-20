@@ -54,7 +54,7 @@ services:
     container_name: mnr-client-frontend-prod
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "3002:80"
     environment:
       - VITE_API_URL=${VITE_API_URL:-https://api.mnrlk.com}
     depends_on:
