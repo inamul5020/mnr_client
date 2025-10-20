@@ -12,7 +12,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.ubuntu
+      dockerfile: Dockerfile.alpine
     environment:
       PORT: 4001
       DATABASE_URL: postgresql://mnr_user:mnr_password@db:5432/todo_demo
@@ -23,7 +23,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.ubuntu
+      dockerfile: Dockerfile.alpine
     ports:
       - "3006:3000"
     depends_on:
