@@ -50,7 +50,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.alpine-serve
+      dockerfile: Dockerfile.alpine-multistage
     container_name: mnr-client-frontend
     restart: unless-stopped
     expose:

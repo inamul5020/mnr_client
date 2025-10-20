@@ -1,0 +1,43 @@
+# Alternative Alpine Dockerfile with multi-stage build
+FROM alpine:3.19 AS builder
+
+WORKDIR /app
+
+# Install Node.js, npm, git and build dependencies
+RUN apk add --no-cache nodejs npm git python3 make g++
+
+# Verify installation
+RUN node --version && npm --version
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm ci --no-audit --no-fund
+
+# Copy source code
+COPY . .
+
+# Build the application
+ENV NODE_ENV=production
+ARG VITE_API_URL_ARG=https://api.mnrlk.com
+ENV VITE_API_URL=${VITE_API_URL_ARG}
+RUN npm run build
+
+# Production stage
+FROM alpine:3.19 AS runner
+
+WORKDIR /app
+
+# Install only Node.js and npm for runtime
+RUN apk add --no-cache nodejs npm
+
+# Install serve globally
+RUN npm install -g serve
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]
