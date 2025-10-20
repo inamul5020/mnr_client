@@ -30,7 +30,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.static
+      dockerfile: Dockerfile
     container_name: mnr-client-backend
     restart: unless-stopped
     expose:
@@ -39,7 +39,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-mnr_user}:${POSTGRES_PASSWORD:-mnr_password}@postgres:5432/${POSTGRES_DB:-mnr_client_intake}
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=${PORT:-3001}
-      - CORS_ORIGIN=${CORS_ORIGIN:-https://client.mnrlk.com}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://mnrlk.com}
       - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
     depends_on:
       postgres:
@@ -49,11 +49,12 @@ services:
       - "coolify.name=mnr-client-backend"
       - "coolify.port=3001"
       - "coolify.healthcheck=/health"
+      - "coolify.domain=api.mnrlk.com"
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.final
+      dockerfile: Dockerfile
     container_name: mnr-client-frontend
     restart: unless-stopped
     expose:
@@ -67,6 +68,7 @@ services:
       - "coolify.name=mnr-client-frontend"
       - "coolify.port=80"
       - "coolify.healthcheck=/"
+      - "coolify.domain=mnrlk.com"
 
 volumes:
   postgres_data:
