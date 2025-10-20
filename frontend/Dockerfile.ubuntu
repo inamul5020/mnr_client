@@ -1,13 +1,15 @@
-# Ubuntu-based Dockerfile for better compatibility
-FROM node:18-bullseye
+# Ubuntu-based Dockerfile as fallback (more reliable than Alpine)
+FROM ubuntu:22.04 AS builder
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# Install Node.js via NodeSource repository (more reliable)
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs git python3 make g++ && \
+    node --version && \
+    npm --version
 
 # Copy package files
 COPY package.json package-lock.json* ./
@@ -18,24 +20,31 @@ RUN npm ci --no-audit --no-fund
 # Copy source code
 COPY . .
 
-# Set environment variables
-ENV NODE_ENV=production
-ENV VITE_API_URL=https://api.mnrlk.com
-
 # Build the application
+ENV NODE_ENV=production
+ARG VITE_API_URL_ARG=https://api.mnrlk.com
+ENV VITE_API_URL=${VITE_API_URL_ARG}
 RUN npm run build
 
-# Install nginx
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+# Production stage
+FROM ubuntu:22.04 AS runner
 
-# Copy built files to nginx directory
-RUN cp -r dist/* /var/www/html/
+WORKDIR /app
 
-# Copy nginx config
-COPY nginx.simple.conf /etc/nginx/sites-available/default
+# Install Node.js for runtime
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    node --version && \
+    npm --version
 
-# Expose port
-EXPOSE 80
+# Install serve globally
+RUN npm install -g serve
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]

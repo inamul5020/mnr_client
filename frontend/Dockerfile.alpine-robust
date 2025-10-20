@@ -1,0 +1,58 @@
+# Ultra-robust Alpine Dockerfile with fallback strategies
+FROM alpine:3.19 AS builder
+
+WORKDIR /app
+
+# Update package index and install Node.js with fallback
+RUN apk update && \
+    apk add --no-cache nodejs npm git python3 make g++ && \
+    node --version && \
+    npm --version || (echo "Node.js installation failed, trying alternative..." && \
+    apk add --no-cache nodejs-current npm-current)
+
+# Verify installation
+RUN which node && which npm && node --version && npm --version
+
+# Copy package files first for better caching
+COPY package.json package-lock.json* ./
+
+# Install dependencies with verbose output
+RUN npm ci --no-audit --no-fund --verbose
+
+# Copy source code
+COPY . .
+
+# Build the application with detailed output
+ENV NODE_ENV=production
+ARG VITE_API_URL_ARG=https://api.mnrlk.com
+ENV VITE_API_URL=${VITE_API_URL_ARG}
+
+# Debug: Show environment and run build
+RUN echo "Building with VITE_API_URL: $VITE_API_URL" && \
+    echo "Node version: $(node --version)" && \
+    echo "NPM version: $(npm --version)" && \
+    npm run build
+
+# Production stage
+FROM alpine:3.19 AS runner
+
+WORKDIR /app
+
+# Install only Node.js and npm for runtime
+RUN apk update && \
+    apk add --no-cache nodejs npm && \
+    node --version && \
+    npm --version
+
+# Install serve globally
+RUN npm install -g serve
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Verify dist directory exists
+RUN ls -la dist/ && echo "Dist directory contents verified"
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]
