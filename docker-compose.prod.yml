@@ -1,21 +1,18 @@
-# Default Development Configuration
-# For production, use: docker-compose -f docker-compose.prod.yml up -d
-# For development, use: docker-compose -f docker-compose.dev.yml up -d
-# Or simply: docker-compose up -d (uses this file for development)
+version: '3.8'
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: mnr-client-db
+    container_name: mnr-client-db-prod
     restart: unless-stopped
     environment:
       POSTGRES_DB: mnr_client_intake
       POSTGRES_USER: mnr_user
-      POSTGRES_PASSWORD: mnr_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mnr_password}
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mnr_user -d mnr_client_intake"]
       interval: 10s
@@ -23,49 +20,52 @@ services:
       retries: 5
     labels:
       - "coolify.managed=true"
-      - "coolify.name=mnr-client-db"
+      - "coolify.name=mnr-client-db-prod"
+      - "environment=production"
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: mnr-client-backend
+    container_name: mnr-client-backend-prod
     restart: unless-stopped
     ports:
       - "3001:3001"
     environment:
-      - DATABASE_URL=postgresql://mnr_user:mnr_password@postgres:5432/mnr_client_intake
+      - DATABASE_URL=postgresql://mnr_user:${POSTGRES_PASSWORD:-mnr_password}@postgres:5432/mnr_client_intake
       - NODE_ENV=production
       - PORT=3001
-      - CORS_ORIGIN=https://mnrlk.com
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://mnrlk.com}
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
     depends_on:
       postgres:
         condition: service_healthy
     labels:
       - "coolify.managed=true"
-      - "coolify.name=mnr-client-backend"
+      - "coolify.name=mnr-client-backend-prod"
       - "coolify.port=3001"
       - "coolify.healthcheck=/health"
+      - "environment=production"
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: mnr-client-frontend
+    container_name: mnr-client-frontend-prod
     restart: unless-stopped
     ports:
-      - "3003:80"
+      - "80:80"
     environment:
-      - VITE_API_URL=https://api.mnrlk.com
+      - VITE_API_URL=${VITE_API_URL:-https://api.mnrlk.com}
     depends_on:
       - backend
     labels:
       - "coolify.managed=true"
-      - "coolify.name=mnr-client-frontend"
+      - "coolify.name=mnr-client-frontend-prod"
       - "coolify.port=80"
       - "coolify.healthcheck=/"
+      - "environment=production"
 
 volumes:
-  postgres_data:
+  postgres_data_prod:
     driver: local

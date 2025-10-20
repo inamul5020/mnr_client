@@ -134,26 +134,29 @@ This is the stable, production-ready version that has been tested and verified t
 
 ### Using Docker Compose (Recommended)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/inamul5020/mnr_client.git
-   cd mnr_client
-   ```
+#### Development Environment
+```bash
+# Quick start (automated)
+./start-dev.sh
 
-2. **Start the application**
-   ```bash
-   docker-compose up -d
-   ```
+# Or manual setup
+docker-compose -f docker-compose.dev.yml up -d
+```
 
-3. **Access the application**
-   - Frontend: http://localhost:3003 (Development) / https://mnrlk.com (Production)
-   - Backend API: http://localhost:3001 (Development) / https://api.mnrlk.com (Production)
-   - Database: localhost:5433
+#### Production Environment
+```bash
+# Quick start (automated)
+./start-prod.sh
 
-4. **Login and start using**
-   - Go to http://localhost:3003
-   - Login with any test account
-   - Submit forms or access admin dashboard
+# Or manual setup
+docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d
+```
+
+#### Default (Development)
+```bash
+# Uses docker-compose.yml (same as dev)
+docker-compose up -d
+```
 
 ### Local Development
 
@@ -299,13 +302,20 @@ npx prisma studio
 
 ## 🚀 Production Deployment
 
+### Multi-Environment Setup
+The project supports separate configurations for development and production:
+
+- **Development**: `docker-compose.dev.yml` - Ports 3003, 3001, 5433
+- **Production**: `docker-compose.prod.yml` - Ports 80, 3001, 5432
+- **Default**: `docker-compose.yml` - Same as development
+
 ### Quick Production Deployment
 ```bash
-# Verify production configuration
-./verify-production.sh
+# Automated deployment
+./start-prod.sh
 
-# Deploy to production
-./deploy-production.sh
+# Or manual deployment
+docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d
 ```
 
 ### Production URLs

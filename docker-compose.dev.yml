@@ -1,12 +1,9 @@
-# Default Development Configuration
-# For production, use: docker-compose -f docker-compose.prod.yml up -d
-# For development, use: docker-compose -f docker-compose.dev.yml up -d
-# Or simply: docker-compose up -d (uses this file for development)
+version: '3.8'
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: mnr-client-db
+    container_name: mnr-client-db-dev
     restart: unless-stopped
     environment:
       POSTGRES_DB: mnr_client_intake
@@ -15,57 +12,53 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mnr_user -d mnr_client_intake"]
       interval: 10s
       timeout: 5s
       retries: 5
     labels:
-      - "coolify.managed=true"
-      - "coolify.name=mnr-client-db"
+      - "environment=development"
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: mnr-client-backend
+    container_name: mnr-client-backend-dev
     restart: unless-stopped
     ports:
       - "3001:3001"
     environment:
       - DATABASE_URL=postgresql://mnr_user:mnr_password@postgres:5432/mnr_client_intake
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3001
-      - CORS_ORIGIN=https://mnrlk.com
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - CORS_ORIGIN=http://localhost:3003
+      - JWT_SECRET=dev-jwt-secret-key
     depends_on:
       postgres:
         condition: service_healthy
     labels:
-      - "coolify.managed=true"
-      - "coolify.name=mnr-client-backend"
-      - "coolify.port=3001"
-      - "coolify.healthcheck=/health"
+      - "environment=development"
+      - "port=3001"
+      - "healthcheck=/health"
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: mnr-client-frontend
+    container_name: mnr-client-frontend-dev
     restart: unless-stopped
     ports:
       - "3003:80"
     environment:
-      - VITE_API_URL=https://api.mnrlk.com
+      - VITE_API_URL=http://localhost:3001
     depends_on:
       - backend
     labels:
-      - "coolify.managed=true"
-      - "coolify.name=mnr-client-frontend"
-      - "coolify.port=80"
-      - "coolify.healthcheck=/"
+      - "environment=development"
+      - "port=3003"
 
 volumes:
-  postgres_data:
+  postgres_data_dev:
     driver: local
