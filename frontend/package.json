@@ -1,6 +1,6 @@
 {
   "name": "mnr-client-intake-frontend",
-  "version": "1.5.8",
+  "version": "1.7.0",
   "type": "module",
   "description": "Frontend for MNR Client Intake System",
   "scripts": {

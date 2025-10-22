@@ -38,7 +38,7 @@ export function SuccessMessage() {
           </Link>
           
           <div className="text-sm text-gray-500">
-            <p>Need help? Contact us at <a href="mailto:support@mnr.com" className="text-primary-600 hover:underline">support@mnr.com</a></p>
+            <p>Need help? Contact us at <a href="mailto:support@mnrlk.com" className="text-primary-600 hover:underline">support@mnrlk.com</a></p>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 A comprehensive client intake management system for MNR Associates, built with React, Node.js, and PostgreSQL. This system allows staff to collect detailed client information through a structured form and manage client data through an admin dashboard.
 
-## 🎉 **STABLE VERSION - v1.6.0**
+## 🎉 **STABLE VERSION - v1.7.0**
 
 **✅ FULLY WORKING & PRODUCTION READY**
 
@@ -15,10 +15,12 @@ This is the stable, production-ready version that has been tested and verified t
 - ✅ **Authentication**: JWT-based auth working
 - ✅ **Form Submission**: Complete client intake working
 - ✅ **Admin Dashboard**: View, edit, delete, export working
-- ✅ **Export**: Excel and CSV export working
-- ✅ **Print Functionality**: A4-optimized client reports
+- ✅ **Export**: Comprehensive Excel and CSV export working
+- ✅ **Print Functionality**: Dynamic A4-optimized client reports
 - ✅ **Statistics Dashboard**: Real-time analytics and metrics
 - ✅ **Tax Year Tracking**: Complete tax return submission tracking
+- ✅ **Dynamic Print Layout**: Smart compact/standard/detailed modes
+- ✅ **Comprehensive Export**: 60+ columns with all client details
 
 ### **Multi-Environment Setup**
 - **Development**: Localhost configuration (ports 3003, 3001, 5433)
@@ -27,6 +29,32 @@ This is the stable, production-ready version that has been tested and verified t
 - **Documentation**: Complete multi-environment deployment guide
 
 ## 🚀 Features
+
+## 🆕 **Recent Enhancements (v1.7.0)**
+
+### Dynamic Print Layout
+- **Smart Content Detection**: Automatically analyzes client data density
+- **Three Print Modes**: 
+  - **Compact Mode (1 page)**: Ultra-compressed layout for minimal data
+  - **Standard Mode (2 pages)**: Balanced layout for moderate data
+  - **Detailed Mode (3+ pages)**: Full layout for comprehensive data
+- **Dynamic Adjustments**: Font sizes, spacing, and grid layouts adapt to content
+- **Page Optimization**: Prevents awkward page breaks and reduces whitespace
+
+### Comprehensive Export System
+- **60+ Columns**: Complete client information in every export
+- **Tax Return Years**: Human-readable format showing all tax categories and submitted years
+- **Related Parties**: Up to 4 related parties with complete contact details
+- **Financial Terms**: Credit limits, payment terms, preferred currency
+- **Document Status**: All document types with Yes/No indicators
+- **Audit Information**: Created by, submission timestamp, consent status
+- **Smart Formatting**: Proper handling of dates, booleans, and arrays
+
+### Enhanced Data Management
+- **Complete Client Profiles**: Every field from the intake form included in exports
+- **Tax Compliance Tracking**: Comprehensive tax return year tracking across all categories
+- **Business Intelligence**: Rich data export for analysis and reporting
+- **Integration Ready**: Structured data format for external system integration
 
 ### Client Intake Form
 - **5-Section Comprehensive Form** with validation (merged Sections B & C)
@@ -43,9 +71,9 @@ This is the stable, production-ready version that has been tested and verified t
 - **Statistics Dashboard** - Real-time analytics and metrics
 - **Detailed View** - Complete client information modal
 - **Edit Functionality** - Update client information with full form validation
-- **Print Functionality** - A4-optimized client reports
+- **Dynamic Print Functionality** - Smart A4-optimized client reports with compact/standard/detailed modes
 - **Delete Protection** - Passcode-protected deletion with soft delete
-- **Export Functionality** - Excel and CSV export options
+- **Comprehensive Export Functionality** - Excel and CSV export with 60+ columns including tax return years
 - **User Authentication** - Role-based access control
 - **Audit Logging** - Complete action tracking
 
@@ -236,10 +264,10 @@ model AuditLog {
 - `DELETE /api/intake/:id` - Delete client intake (requires auth + passcode)
 
 ### Export
-- `GET /api/export/excel/:id` - Export single client to Excel
-- `GET /api/export/excel/all` - Export all clients to Excel
-- `GET /api/export/csv/:id` - Export single client to CSV
-- `GET /api/export/csv/all` - Export all clients to CSV
+- `GET /api/export/excel/:id` - Export single client to Excel with comprehensive details
+- `GET /api/export/excel-all` - Export all clients to Excel with 60+ columns including tax return years
+- `GET /api/export/csv/:id` - Export single client to CSV with comprehensive details
+- `GET /api/export/csv-all` - Export all clients to CSV with 60+ columns including tax return years
 
 ### Audit
 - `GET /api/audit/logs` - Get audit logs (requires auth)

@@ -5,6 +5,47 @@ All notable changes to the MNR Client Intake System will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2025-10-22
+
+### Added
+- **Dynamic Print Layout System** - Smart content detection and adaptive print modes
+- **Comprehensive Export Enhancement** - 60+ columns with complete client details
+- **Tax Return Years Export** - Human-readable tax return year tracking in exports
+- **Smart Print Modes**:
+  - **Compact Mode (1 page)**: Ultra-compressed layout for minimal data
+  - **Standard Mode (2 pages)**: Balanced layout for moderate data  
+  - **Detailed Mode (3+ pages)**: Full layout for comprehensive data
+- **Enhanced Export Columns**:
+  - Complete organization details (address, city, state, ZIP, country)
+  - Full contact information (mobile, landline, email, website)
+  - Business information (nature, industry, priority)
+  - Service details (selected services, frequencies, tax types)
+  - Tax return years with formatted display
+  - Company details (secretary, registration, incorporation, revenue, employees)
+  - RAMIS and document status
+  - Financial terms (credit limit, payment terms, currency)
+  - Related parties (up to 4 with complete contact details)
+  - Audit information (created by, submission date, consent)
+
+### Enhanced
+- **Print View Component** - Dynamic layout adjustment based on content density
+- **Export API Endpoints** - Comprehensive data export for both Excel and CSV
+- **Data Formatting** - Smart formatting for dates, booleans, and arrays
+- **Tax Return Years Display** - Human-readable format: "Income Tax: 2020, 2021, 2022 | VAT: 2021, 2022"
+- **Export File Naming** - Updated to include "comprehensive" for clarity
+
+### Technical Improvements
+- **Helper Functions** - Added `formatTaxReturnYears()` for readable tax data
+- **Null Safety** - Enhanced null checks for arrays and optional fields
+- **Export Performance** - Optimized data processing for large exports
+- **Column Width Management** - Smart column sizing for Excel exports
+- **Data Validation** - Enhanced validation for export data integrity
+
+### Fixed
+- **Export Array Handling** - Fixed "Cannot read properties of undefined (reading 'join')" errors
+- **Tax Return Years Processing** - Proper handling of JSON tax return years data
+- **Export Data Completeness** - Ensured all client fields are included in exports
+
 ## [1.0.1] - 2025-10-18
 
 ### Fixed
