@@ -1,8 +1,8 @@
-# MNR Client Intake System
+# MNR Client Intake System v1.8.1
 
 A comprehensive client intake management system for MNR Associates, built with React, Node.js, and PostgreSQL. This system allows staff to collect detailed client information through a structured form and manage client data through an admin dashboard.
 
-## 🎉 **STABLE VERSION - v1.8.0**
+## 🎉 **STABLE VERSION - v1.8.1**
 
 **✅ FULLY WORKING & PRODUCTION READY**
 

@@ -44,9 +44,9 @@ router.get('/excel-all', async (req, res) => {
       { header: 'Legal Name', key: 'legalName', width: 25 },
       { header: 'Trade Name', key: 'tradeName', width: 25 },
       { header: 'Type', key: 'type', width: 15 },
-      { header: 'Managed By', key: 'managedBy', width: 15 },
-      { header: 'Managed By Contact Name', key: 'managedByContactName', width: 25 },
       { header: 'Owner Name', key: 'ownerName', width: 25 },
+      { header: 'Managed By', key: 'managedBy', width: 15 },
+      { header: 'Other Contact Name', key: 'managedByContactName', width: 25 },
       { header: 'Address', key: 'address', width: 40 },
       { header: 'City', key: 'city', width: 20 },
       { header: 'State', key: 'state', width: 20 },
@@ -117,9 +117,9 @@ router.get('/excel-all', async (req, res) => {
         legalName: client.legalName,
         tradeName: client.tradeName || '',
         type: client.type,
+        ownerName: client.ownerName,
         managedBy: client.managedBy || '',
         managedByContactName: client.managedByContactName || '',
-        ownerName: client.ownerName,
         address: client.address,
         city: client.city || '',
         state: client.state || '',
@@ -240,9 +240,11 @@ router.get('/excel/:id', async (req, res) => {
     clientSheet.addRow({ field: 'LEGAL NAME', value: clientIntake.legalName });
     clientSheet.addRow({ field: 'Trade Name', value: clientIntake.tradeName || '' });
     clientSheet.addRow({ field: 'Type', value: clientIntake.type });
-    clientSheet.addRow({ field: 'Managed By', value: clientIntake.managedBy || '' });
-    clientSheet.addRow({ field: 'Managed By Contact Name', value: clientIntake.managedByContactName || '' });
     clientSheet.addRow({ field: 'Owner/Primary Contact', value: clientIntake.ownerName });
+    clientSheet.addRow({ field: 'Managed By', value: clientIntake.managedBy || '' });
+    if (clientIntake.managedBy === 'Other' && clientIntake.managedByContactName) {
+      clientSheet.addRow({ field: 'Other Contact Name', value: clientIntake.managedByContactName });
+    }
     clientSheet.addRow({ field: 'Address', value: clientIntake.address });
     clientSheet.addRow({ field: 'City', value: clientIntake.city || '' });
     clientSheet.addRow({ field: 'State', value: clientIntake.state || '' });
@@ -363,9 +365,9 @@ router.get('/csv-all', async (req, res) => {
         { id: 'legalName', title: 'Legal Name' },
         { id: 'tradeName', title: 'Trade Name' },
         { id: 'type', title: 'Type' },
-        { id: 'managedBy', title: 'Managed By' },
-        { id: 'managedByContactName', title: 'Managed By Contact Name' },
         { id: 'ownerName', title: 'Owner Name' },
+        { id: 'managedBy', title: 'Managed By' },
+        { id: 'managedByContactName', title: 'Other Contact Name' },
         { id: 'address', title: 'Address' },
         { id: 'city', title: 'City' },
         { id: 'state', title: 'State' },
@@ -519,9 +521,9 @@ router.get('/csv/:id', async (req, res) => {
         { id: 'legalName', title: 'Legal Name' },
         { id: 'tradeName', title: 'Trade Name' },
         { id: 'type', title: 'Type' },
-        { id: 'managedBy', title: 'Managed By' },
-        { id: 'managedByContactName', title: 'Managed By Contact Name' },
         { id: 'ownerName', title: 'Owner Name' },
+        { id: 'managedBy', title: 'Managed By' },
+        { id: 'managedByContactName', title: 'Other Contact Name' },
         { id: 'address', title: 'Address' },
         { id: 'city', title: 'City' },
         { id: 'state', title: 'State' },

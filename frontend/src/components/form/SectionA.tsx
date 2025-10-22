@@ -99,30 +99,6 @@ export function SectionA({ form, errors }: SectionAProps) {
           )}
         </div>
 
-        {/* Managed By */}
-        <div className="form-group">
-          <label className="label">Managed By</label>
-          <select {...register('managedBy')} className="input">
-            <option value="">Select an option</option>
-            <option value="Owner">Owner</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        {/* Conditional Contact Name Field */}
-        {managedBy && (
-          <div className="form-group">
-            <label className="label">
-              {managedBy === 'Owner' ? 'Owner Contact Name' : 'Other Contact Name'}
-            </label>
-            <input
-              {...register('managedByContactName')}
-              className="input"
-              placeholder={`Enter ${managedBy.toLowerCase()} contact name`}
-            />
-          </div>
-        )}
-
         {/* Owner / Primary Contact Name */}
         <div className="form-group">
           <label className="label">
@@ -137,6 +113,28 @@ export function SectionA({ form, errors }: SectionAProps) {
             <p className="error-message">{errors.ownerName.message}</p>
           )}
         </div>
+
+        {/* Managed By */}
+        <div className="form-group">
+          <label className="label">Managed By</label>
+          <select {...register('managedBy')} className="input">
+            <option value="">Select an option</option>
+            <option value="Owner">Owner</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        {/* Conditional Contact Name Field - Only show when "Other" is selected */}
+        {managedBy === 'Other' && (
+          <div className="form-group">
+            <label className="label">Other Contact Name</label>
+            <input
+              {...register('managedByContactName')}
+              className="input"
+              placeholder="Enter other contact name"
+            />
+          </div>
+        )}
 
         {/* Address */}
         <div className="form-group">

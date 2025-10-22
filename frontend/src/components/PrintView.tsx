@@ -434,17 +434,21 @@ export function PrintView({ client, isOpen, onClose }: PrintViewProps) {
             <div className="field-value">{client.type}</div>
           </div>
           <div className="field-row">
-            <div className="field-label">Managed By:</div>
-            <div className="field-value">{client.managedBy || 'N/A'}</div>
-          </div>
-          <div className="field-row">
-            <div className="field-label">Managed By Contact:</div>
-            <div className="field-value">{client.managedByContactName || 'N/A'}</div>
-          </div>
-          <div className="field-row">
             <div className="field-label">Owner:</div>
             <div className="field-value">{client.ownerName}</div>
           </div>
+          {client.managedBy && (
+            <div className="field-row">
+              <div className="field-label">Managed By:</div>
+              <div className="field-value">{client.managedBy}</div>
+            </div>
+          )}
+          {client.managedBy === 'Other' && client.managedByContactName && (
+            <div className="field-row">
+              <div className="field-label">Other Contact:</div>
+              <div className="field-value">{client.managedByContactName}</div>
+            </div>
+          )}
           <div className="field-row">
             <div className="field-label">Mobile:</div>
             <div className="field-value">{client.phoneMobile}</div>

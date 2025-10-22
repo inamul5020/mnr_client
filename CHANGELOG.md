@@ -5,6 +5,20 @@ All notable changes to the MNR Client Intake System will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2025-01-22
+
+### Fixed
+- **Improved Form Logic**: Fixed "Managed By" field logic where "Other Contact Name" field only appears when "Other" is selected
+- **Better Field Ordering**: Moved "Managed By" field to appear after "Owner/Primary Contact Name" for better logical flow
+- **Conditional Display**: "Other Contact Name" field now only shows when "Other" is selected in "Managed By" dropdown
+- **Export Updates**: Updated all export formats (Excel, CSV) to reflect improved field ordering and conditional logic
+- **Display Components**: Updated PrintView and ClientDetailView to show fields in logical order with proper conditional display
+
+### Technical Improvements
+- **Form UX**: Eliminated redundancy by not asking for owner name again when "Owner" is selected
+- **Data Consistency**: Ensured all views and exports display the same logical field structure
+- **Code Quality**: Improved conditional rendering logic across all components
+
 ## [1.8.0] - 2025-01-22
 
 ### Added

@@ -113,6 +113,11 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
                     <p className="text-gray-900">{client.type}</p>
                   </div>
                   
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Owner/Primary Contact</label>
+                    <p className="text-gray-900">{client.ownerName}</p>
+                  </div>
+                  
                   {client.managedBy && (
                     <div>
                       <label className="text-sm font-medium text-gray-500">Managed By</label>
@@ -120,17 +125,12 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
                     </div>
                   )}
                   
-                  {client.managedByContactName && (
+                  {client.managedBy === 'Other' && client.managedByContactName && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Managed By Contact Name</label>
+                      <label className="text-sm font-medium text-gray-500">Other Contact Name</label>
                       <p className="text-gray-900">{client.managedByContactName}</p>
                     </div>
                   )}
-                  
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Owner/Primary Contact</label>
-                    <p className="text-gray-900">{client.ownerName}</p>
-                  </div>
                   
                   <div>
                     <label className="text-sm font-medium text-gray-500">Nature of Business</label>
