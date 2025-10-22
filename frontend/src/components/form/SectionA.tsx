@@ -9,12 +9,15 @@ interface SectionAProps {
 }
 
 export function SectionA({ form, errors }: SectionAProps) {
-  const { register, setValue } = form;
+  const { register, setValue, watch } = form;
+  const managedBy = watch('managedBy');
 
   const fillSampleData = () => {
     setValue('legalName', 'Sample Company Ltd');
     setValue('tradeName', 'Sample Co');
     setValue('type', 'COMPANY');
+    setValue('managedBy', 'Owner');
+    setValue('managedByContactName', 'John Smith');
     setValue('ownerName', 'John Smith');
     setValue('address', '123 Business Street, Colombo 03');
     setValue('city', 'Colombo');
@@ -79,37 +82,60 @@ export function SectionA({ form, errors }: SectionAProps) {
           />
         </div>
 
-        {/* Type and Owner */}
-        <div className="form-row">
-          <div className="form-group">
-            <label className="label">
-              Type <span className="text-red-500">*</span>
-            </label>
-            <select {...register('type')} className="input">
-              {CLIENT_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-            {errors.type && (
-              <p className="error-message">{errors.type.message}</p>
-            )}
-          </div>
+        {/* Type */}
+        <div className="form-group">
+          <label className="label">
+            Type <span className="text-red-500">*</span>
+          </label>
+          <select {...register('type')} className="input">
+            {CLIENT_TYPES.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+          {errors.type && (
+            <p className="error-message">{errors.type.message}</p>
+          )}
+        </div>
 
+        {/* Managed By */}
+        <div className="form-group">
+          <label className="label">Managed By</label>
+          <select {...register('managedBy')} className="input">
+            <option value="">Select an option</option>
+            <option value="Owner">Owner</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        {/* Conditional Contact Name Field */}
+        {managedBy && (
           <div className="form-group">
             <label className="label">
-              Owner / Primary Contact Name <span className="text-red-500">*</span>
+              {managedBy === 'Owner' ? 'Owner Contact Name' : 'Other Contact Name'}
             </label>
             <input
-              {...register('ownerName')}
+              {...register('managedByContactName')}
               className="input"
-              placeholder="Enter full name"
+              placeholder={`Enter ${managedBy.toLowerCase()} contact name`}
             />
-            {errors.ownerName && (
-              <p className="error-message">{errors.ownerName.message}</p>
-            )}
           </div>
+        )}
+
+        {/* Owner / Primary Contact Name */}
+        <div className="form-group">
+          <label className="label">
+            Owner / Primary Contact Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            {...register('ownerName')}
+            className="input"
+            placeholder="Enter full name"
+          />
+          {errors.ownerName && (
+            <p className="error-message">{errors.ownerName.message}</p>
+          )}
         </div>
 
         {/* Address */}
@@ -170,9 +196,7 @@ export function SectionA({ form, errors }: SectionAProps) {
         {/* Phone Numbers */}
         <div className="form-row">
           <div className="form-group">
-            <label className="label">
-              Phone (Mobile) <span className="text-red-500">*</span>
-            </label>
+            <label className="label">Phone (Mobile)</label>
             <input
               {...register('phoneMobile')}
               className="input"
@@ -196,9 +220,7 @@ export function SectionA({ form, errors }: SectionAProps) {
         {/* Email and Website */}
         <div className="form-row">
           <div className="form-group">
-            <label className="label">
-              Email <span className="text-red-500">*</span>
-            </label>
+            <label className="label">Email</label>
             <input
               {...register('email')}
               type="email"
@@ -224,9 +246,7 @@ export function SectionA({ form, errors }: SectionAProps) {
         {/* Nature of Business and Industry */}
         <div className="form-row">
           <div className="form-group">
-            <label className="label">
-              Nature of Business <span className="text-red-500">*</span>
-            </label>
+            <label className="label">Nature of Business</label>
             <textarea
               {...register('natureOfBusiness')}
               className="input min-h-[80px]"

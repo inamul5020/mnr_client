@@ -5,6 +5,37 @@ All notable changes to the MNR Client Intake System will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-01-22
+
+### Added
+- **Managed By Field**: Added dropdown with "Owner" and "Other" options in Section A
+- **Conditional Contact Fields**: Added "Managed By Contact Name" field that displays based on Managed By selection
+- **Enhanced Data Model**: Added `managedBy` and `managedByContactName` fields to database schema
+
+### Changed
+- **Validation Updates**: Made Phone Mobile, Email, Nature of Business, and TIN optional (removed required validation)
+- **Service Frequency Removal**: Removed frequency selection from all tax services (Income Taxes, Capital Gain Tax, VAT, SSCL, APIT, WHT/AIT)
+- **Service Frequency Removal**: Removed frequency selection from HR Services, SLTDA, Trade License, Audit, Accounts
+- **Form Structure**: Simplified Section B by removing frequency complexity
+- **Export Updates**: Updated Excel and CSV exports to include new fields and exclude removed fields
+
+### Removed
+- **Section F Complete Removal**: Removed Financial Terms section entirely from form and database
+- **Financial Fields**: Removed `creditLimit`, `paymentTerms`, and `preferredCurrency` from data model
+- **Required Validations**: Removed red asterisks from Phone Mobile, Email, Nature of Business, and TIN fields
+
+### Updated
+- **Display Components**: Updated PrintView and ClientDetailView to show new fields and hide removed sections
+- **TypeScript Types**: Updated interface definitions to reflect new optional fields
+- **Backend API**: Updated validation middleware and data handling for new field structure
+- **Form Components**: Updated Section A and Section B components with new field structure
+
+### Technical Improvements
+- **Database Schema**: Updated Prisma schema with new fields and removed deprecated fields
+- **Form Validation**: Simplified validation rules for better user experience
+- **Export Functionality**: Enhanced export files with comprehensive field mapping
+- **Component Architecture**: Improved conditional rendering for new field structure
+
 ## [1.7.0] - 2025-10-22
 
 ### Added

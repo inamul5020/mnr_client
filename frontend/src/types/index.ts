@@ -5,17 +5,19 @@ export interface ClientIntake {
   legalName: string;
   tradeName?: string;
   type: 'INDIVIDUAL' | 'PARTNERSHIP' | 'COMPANY' | 'NGO' | 'OTHER';
+  managedBy?: string;
+  managedByContactName?: string;
   ownerName: string;
   address: string;
   city?: string;
   state?: string;
   zipCode?: string;
   country?: string;
-  phoneMobile: string;
+  phoneMobile?: string;
   phoneLand?: string;
-  email: string;
+  email?: string;
   website?: string;
-  natureOfBusiness: string;
+  natureOfBusiness?: string;
   industry?: string;
   clientPriority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'VIP';
   
@@ -45,11 +47,6 @@ export interface ClientIntake {
   docsOther1?: string;
   docsOther2?: string;
   complianceNotes?: string;
-  
-  // Section F - Financial Terms
-  creditLimit?: number;
-  paymentTerms?: string;
-  preferredCurrency?: string;
   
   // Metadata
   notes?: string;

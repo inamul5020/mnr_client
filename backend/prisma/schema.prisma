@@ -18,17 +18,19 @@ model ClientIntake {
   legalName   String
   tradeName   String?
   type        ClientType
+  managedBy   String?
+  managedByContactName String?
   ownerName   String
   address     String
   city        String?
   state       String?
   zipCode     String?
   country     String?
-  phoneMobile String
+  phoneMobile String?
   phoneLand   String?
-  email       String
+  email       String?
   website     String?
-  natureOfBusiness String
+  natureOfBusiness String?
   industry    String?
   clientPriority ClientPriority @default(MEDIUM)
   
@@ -58,11 +60,6 @@ model ClientIntake {
   docsOther1      String?
   docsOther2      String?
   complianceNotes String?
-  
-  // Financial Terms (Section F)
-  creditLimit     Decimal? @db.Decimal(15, 2)
-  paymentTerms    String?
-  preferredCurrency String? @default("USD")
   
   // Metadata
   notes           String? @db.Text

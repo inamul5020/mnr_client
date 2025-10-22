@@ -113,6 +113,20 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
                     <p className="text-gray-900">{client.type}</p>
                   </div>
                   
+                  {client.managedBy && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Managed By</label>
+                      <p className="text-gray-900">{client.managedBy}</p>
+                    </div>
+                  )}
+                  
+                  {client.managedByContactName && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Managed By Contact Name</label>
+                      <p className="text-gray-900">{client.managedByContactName}</p>
+                    </div>
+                  )}
+                  
                   <div>
                     <label className="text-sm font-medium text-gray-500">Owner/Primary Contact</label>
                     <p className="text-gray-900">{client.ownerName}</p>
@@ -421,46 +435,6 @@ export function ClientDetailView({ client, isOpen, onClose }: ClientDetailViewPr
                 </div>
               </div>
             </div>
-
-            {/* Section E - Financial Terms */}
-            {(client.creditLimit || client.paymentTerms || client.preferredCurrency || client.complianceNotes) && (
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2 mb-4">
-                  <CreditCard className="h-5 w-5 text-primary-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Financial Terms</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    {client.creditLimit && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Credit Limit</label>
-                        <p className="text-gray-900">${parseFloat(client.creditLimit.toString()).toLocaleString()}</p>
-                      </div>
-                    )}
-                    
-                    {client.paymentTerms && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Payment Terms</label>
-                        <p className="text-gray-900">{client.paymentTerms}</p>
-                      </div>
-                    )}
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Preferred Currency</label>
-                      <p className="text-gray-900">{client.preferredCurrency}</p>
-                    </div>
-                  </div>
-                  
-                  {client.complianceNotes && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Compliance Notes</label>
-                      <p className="text-gray-900">{client.complianceNotes}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
 
             {/* Related Parties */}
             {client.relatedParties && client.relatedParties.length > 0 && (

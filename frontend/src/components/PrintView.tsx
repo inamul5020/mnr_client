@@ -46,9 +46,6 @@ export function PrintView({ client, isOpen, onClose }: PrintViewProps) {
     if (client.employeeCount) contentDensity++;
     if (client.ramisEmail) contentDensity++;
     if (client.complianceNotes) contentDensity++;
-    if (client.creditLimit) contentDensity++;
-    if (client.paymentTerms) contentDensity++;
-    if (client.preferredCurrency) contentDensity++;
     if (client.notes) contentDensity++;
     if (client.relatedParties && client.relatedParties.length > 0) contentDensity += client.relatedParties.length;
     if (client.taxReturnYears && Object.keys(client.taxReturnYears).length > 0) contentDensity += Object.keys(client.taxReturnYears).length;
@@ -437,6 +434,14 @@ export function PrintView({ client, isOpen, onClose }: PrintViewProps) {
             <div className="field-value">{client.type}</div>
           </div>
           <div className="field-row">
+            <div className="field-label">Managed By:</div>
+            <div className="field-value">{client.managedBy || 'N/A'}</div>
+          </div>
+          <div className="field-row">
+            <div className="field-label">Managed By Contact:</div>
+            <div className="field-value">{client.managedByContactName || 'N/A'}</div>
+          </div>
+          <div className="field-row">
             <div className="field-label">Owner:</div>
             <div className="field-value">{client.ownerName}</div>
           </div>
@@ -785,25 +790,6 @@ export function PrintView({ client, isOpen, onClose }: PrintViewProps) {
                 <div className="field-value">{client.complianceNotes}</div>
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Financial Terms */}
-        <div className="section">
-          <div className="section-title">Financial Terms</div>
-          <div className="three-column">
-            <div className="field-row">
-              <div className="field-label">Credit Limit:</div>
-              <div className="field-value">{client.creditLimit ? `$${client.creditLimit.toLocaleString()}` : 'N/A'}</div>
-            </div>
-            <div className="field-row">
-              <div className="field-label">Payment Terms:</div>
-              <div className="field-value">{client.paymentTerms || 'N/A'}</div>
-            </div>
-            <div className="field-row">
-              <div className="field-label">Currency:</div>
-              <div className="field-value">{client.preferredCurrency || 'N/A'}</div>
-            </div>
           </div>
         </div>
 

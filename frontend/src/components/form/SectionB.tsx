@@ -27,13 +27,6 @@ export function SectionB({ form, errors }: SectionBProps) {
     setValue('directTaxSubcategories', ['Income Taxes', 'Capital Gain Tax']);
     setValue('indirectTaxSubcategories', ['VAT', 'SSCL']);
     setValue('incomeTaxTypes', ['CIT', 'PIT']);
-    setValue('serviceFrequencies', {
-      'Income Taxes': 'Monthly',
-      'Capital Gain Tax': 'Annually',
-      'VAT': 'Quarterly',
-      'SSCL': 'Monthly',
-      'Accounts': 'Monthly'
-    });
     setValue('tin', '123456789V');
     setValue('otherRegistrations', 'BOI registration, Export license');
   };
@@ -169,23 +162,6 @@ export function SectionB({ form, errors }: SectionBProps) {
                       </div>
                     </div>
                   )}
-                  
-                  {/* Frequency Selection */}
-                  {directTaxSubcategories.includes(subcategory) && (
-                    <div className="ml-7 mt-2">
-                      <label className="text-xs text-gray-600">Frequency:</label>
-                      <select
-                        value={serviceFrequencies[subcategory] || ''}
-                        onChange={(e) => handleFrequencyChange(subcategory, e.target.value)}
-                        className="mt-1 block w-full text-sm border-gray-300 rounded-md"
-                      >
-                        <option value="">Select Frequency</option>
-                        {FREQUENCY_OPTIONS.map((freq) => (
-                          <option key={freq} value={freq}>{freq}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
@@ -213,23 +189,6 @@ export function SectionB({ form, errors }: SectionBProps) {
                     />
                     <span className="text-sm font-medium text-gray-900">{subcategory}</span>
                   </label>
-                  
-                  {/* Frequency Selection */}
-                  {indirectTaxSubcategories.includes(subcategory) && (
-                    <div className="ml-7 mt-2">
-                      <label className="text-xs text-gray-600">Frequency:</label>
-                      <select
-                        value={serviceFrequencies[subcategory] || ''}
-                        onChange={(e) => handleFrequencyChange(subcategory, e.target.value)}
-                        className="mt-1 block w-full text-sm border-gray-300 rounded-md"
-                      >
-                        <option value="">Select Frequency</option>
-                        {FREQUENCY_OPTIONS.map((freq) => (
-                          <option key={freq} value={freq}>{freq}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
@@ -239,29 +198,11 @@ export function SectionB({ form, errors }: SectionBProps) {
           </div>
         )}
 
-        {/* Frequency for other services */}
-        {servicesSelected.filter(s => !['Direct Tax', 'Indirect Tax'].includes(s)).map((service) => (
-          <div key={service} className="form-group">
-            <label className="label">{service} Frequency</label>
-            <select
-              value={serviceFrequencies[service] || ''}
-              onChange={(e) => handleFrequencyChange(service, e.target.value)}
-              className="input"
-            >
-              <option value="">Select Frequency</option>
-              {FREQUENCY_OPTIONS.map((freq) => (
-                <option key={freq} value={freq}>{freq}</option>
-              ))}
-            </select>
-          </div>
-        ))}
 
         {/* TIN - Required for tax services */}
         {isTaxServiceSelected && (
           <div className="form-group bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-            <label className="label">
-              TIN (Tax Identification Number) <span className="text-red-500">*</span>
-            </label>
+            <label className="label">TIN (Tax Identification Number)</label>
             <input
               {...register('tin')}
               className="input"

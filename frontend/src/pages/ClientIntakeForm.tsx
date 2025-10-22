@@ -9,7 +9,6 @@ import { SectionA } from '../components/form/SectionA';
 import { SectionB } from '../components/form/SectionB';
 import { SectionD } from '../components/form/SectionD';
 import { SectionE } from '../components/form/SectionE';
-import { SectionF } from '../components/form/SectionF';
 import { FormProgress } from '../components/form/FormProgress';
 import { FormNavigation } from '../components/form/FormNavigation';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
@@ -20,17 +19,19 @@ const formSchema = z.object({
   legalName: z.string().min(1, 'Legal name is required'),
   tradeName: z.string().optional(),
   type: z.enum(['INDIVIDUAL', 'PARTNERSHIP', 'COMPANY', 'NGO', 'OTHER']),
+  managedBy: z.string().optional(),
+  managedByContactName: z.string().optional(),
   ownerName: z.string().min(1, 'Owner/Primary contact name is required'),
   address: z.string().min(1, 'Business address is required'),
   city: z.string().optional(),
   state: z.string().optional(),
   zipCode: z.string().optional(),
   country: z.string().optional(),
-  phoneMobile: z.string().min(1, 'Mobile phone is required'),
+  phoneMobile: z.string().optional(),
   phoneLand: z.string().optional(),
-  email: z.string().email('Valid email is required'),
+  email: z.string().email().optional().or(z.literal('')),
   website: z.string().url().optional().or(z.literal('')),
-  natureOfBusiness: z.string().min(1, 'Nature of business is required'),
+  natureOfBusiness: z.string().optional(),
   industry: z.string().optional(),
   clientPriority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'VIP']).optional(),
   
@@ -60,11 +61,6 @@ const formSchema = z.object({
   docsOther1: z.string().optional(),
   docsOther2: z.string().optional(),
   complianceNotes: z.string().optional(),
-  
-  // Section F - Financial Terms
-  creditLimit: z.number().optional(),
-  paymentTerms: z.string().optional(),
-  preferredCurrency: z.string().optional(),
   
   // Metadata
   notes: z.string().optional(),
@@ -97,15 +93,6 @@ const formSchema = z.object({
   message: 'At least one Indirect Tax subcategory must be selected',
   path: ['indirectTaxSubcategories']
 }).refine((data) => {
-  // TIN required when tax services are selected
-  if (data.servicesSelected.includes('Direct Tax') || data.servicesSelected.includes('Indirect Tax')) {
-    return data.tin && data.tin.length > 0;
-  }
-  return true;
-}, {
-  message: 'TIN is required when tax services are selected',
-  path: ['tin']
-}).refine((data) => {
   // Company Secretary required for Company type
   if (data.type === 'COMPANY') {
     return data.companySecretary && data.companySecretary.length > 0;
@@ -122,8 +109,7 @@ const SECTIONS = [
   { id: 'section-a', title: 'Organization Details', description: 'Basic client information' },
   { id: 'section-b', title: 'Services & Tax Profile', description: 'Service requirements and tax information' },
   { id: 'section-d', title: 'Related Parties', description: 'Directors, partners, and key personnel' },
-  { id: 'section-e', title: 'RAMIS & Documents', description: 'System access and document tracking' },
-  { id: 'section-f', title: 'Financial Terms', description: 'Payment terms and preferences' }
+  { id: 'section-e', title: 'RAMIS & Documents', description: 'System access and document tracking' }
 ];
 
 export function ClientIntakeForm() {
@@ -141,7 +127,6 @@ export function ClientIntakeForm() {
       docsDeed: false,
       docsVehicleReg: false,
       clientPriority: 'MEDIUM',
-      preferredCurrency: 'USD',
       servicesSelected: [],
       directTaxSubcategories: [],
       indirectTaxSubcategories: [],
@@ -241,9 +226,6 @@ export function ClientIntakeForm() {
             )}
             {currentSection === 3 && (
               <SectionE form={form} errors={errors} />
-            )}
-            {currentSection === 4 && (
-              <SectionF form={form} errors={errors} />
             )}
           </div>
         </div>

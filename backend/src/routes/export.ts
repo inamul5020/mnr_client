@@ -44,6 +44,8 @@ router.get('/excel-all', async (req, res) => {
       { header: 'Legal Name', key: 'legalName', width: 25 },
       { header: 'Trade Name', key: 'tradeName', width: 25 },
       { header: 'Type', key: 'type', width: 15 },
+      { header: 'Managed By', key: 'managedBy', width: 15 },
+      { header: 'Managed By Contact Name', key: 'managedByContactName', width: 25 },
       { header: 'Owner Name', key: 'ownerName', width: 25 },
       { header: 'Address', key: 'address', width: 40 },
       { header: 'City', key: 'city', width: 20 },
@@ -76,9 +78,6 @@ router.get('/excel-all', async (req, res) => {
       { header: 'Other Document 1', key: 'docsOther1', width: 25 },
       { header: 'Other Document 2', key: 'docsOther2', width: 25 },
       { header: 'Compliance Notes', key: 'complianceNotes', width: 30 },
-      { header: 'Credit Limit', key: 'creditLimit', width: 20 },
-      { header: 'Payment Terms', key: 'paymentTerms', width: 20 },
-      { header: 'Preferred Currency', key: 'preferredCurrency', width: 15 },
       { header: 'Notes', key: 'notes', width: 40 },
       { header: 'Consent Given', key: 'consent', width: 15 },
       { header: 'Created By', key: 'createdBy', width: 20 },
@@ -118,6 +117,8 @@ router.get('/excel-all', async (req, res) => {
         legalName: client.legalName,
         tradeName: client.tradeName || '',
         type: client.type,
+        managedBy: client.managedBy || '',
+        managedByContactName: client.managedByContactName || '',
         ownerName: client.ownerName,
         address: client.address,
         city: client.city || '',
@@ -150,9 +151,6 @@ router.get('/excel-all', async (req, res) => {
         docsOther1: client.docsOther1 || '',
         docsOther2: client.docsOther2 || '',
         complianceNotes: client.complianceNotes || '',
-        creditLimit: client.creditLimit ? client.creditLimit.toString() : '',
-        paymentTerms: client.paymentTerms || '',
-        preferredCurrency: client.preferredCurrency || '',
         notes: client.notes || '',
         consent: client.consent ? 'Yes' : 'No',
         createdBy: client.createdBy || '',
@@ -242,6 +240,8 @@ router.get('/excel/:id', async (req, res) => {
     clientSheet.addRow({ field: 'LEGAL NAME', value: clientIntake.legalName });
     clientSheet.addRow({ field: 'Trade Name', value: clientIntake.tradeName || '' });
     clientSheet.addRow({ field: 'Type', value: clientIntake.type });
+    clientSheet.addRow({ field: 'Managed By', value: clientIntake.managedBy || '' });
+    clientSheet.addRow({ field: 'Managed By Contact Name', value: clientIntake.managedByContactName || '' });
     clientSheet.addRow({ field: 'Owner/Primary Contact', value: clientIntake.ownerName });
     clientSheet.addRow({ field: 'Address', value: clientIntake.address });
     clientSheet.addRow({ field: 'City', value: clientIntake.city || '' });
@@ -282,11 +282,6 @@ router.get('/excel/:id', async (req, res) => {
     clientSheet.addRow({ field: 'Other Document 1', value: clientIntake.docsOther1 || '' });
     clientSheet.addRow({ field: 'Other Document 2', value: clientIntake.docsOther2 || '' });
     clientSheet.addRow({ field: 'Compliance Notes', value: clientIntake.complianceNotes || '' });
-
-    // Section F - Financial Terms
-    clientSheet.addRow({ field: 'Credit Limit', value: clientIntake.creditLimit?.toString() || '' });
-    clientSheet.addRow({ field: 'Payment Terms', value: clientIntake.paymentTerms || '' });
-    clientSheet.addRow({ field: 'Preferred Currency', value: clientIntake.preferredCurrency || '' });
 
     // Metadata
     clientSheet.addRow({ field: 'Notes', value: clientIntake.notes || '' });
@@ -368,6 +363,8 @@ router.get('/csv-all', async (req, res) => {
         { id: 'legalName', title: 'Legal Name' },
         { id: 'tradeName', title: 'Trade Name' },
         { id: 'type', title: 'Type' },
+        { id: 'managedBy', title: 'Managed By' },
+        { id: 'managedByContactName', title: 'Managed By Contact Name' },
         { id: 'ownerName', title: 'Owner Name' },
         { id: 'address', title: 'Address' },
         { id: 'city', title: 'City' },
@@ -400,9 +397,6 @@ router.get('/csv-all', async (req, res) => {
         { id: 'docsOther1', title: 'Other Document 1' },
         { id: 'docsOther2', title: 'Other Document 2' },
         { id: 'complianceNotes', title: 'Compliance Notes' },
-        { id: 'creditLimit', title: 'Credit Limit' },
-        { id: 'paymentTerms', title: 'Payment Terms' },
-        { id: 'preferredCurrency', title: 'Preferred Currency' },
         { id: 'notes', title: 'Notes' },
         { id: 'consent', title: 'Consent Given' },
         { id: 'createdBy', title: 'Created By' },
@@ -525,6 +519,8 @@ router.get('/csv/:id', async (req, res) => {
         { id: 'legalName', title: 'Legal Name' },
         { id: 'tradeName', title: 'Trade Name' },
         { id: 'type', title: 'Type' },
+        { id: 'managedBy', title: 'Managed By' },
+        { id: 'managedByContactName', title: 'Managed By Contact Name' },
         { id: 'ownerName', title: 'Owner Name' },
         { id: 'address', title: 'Address' },
         { id: 'city', title: 'City' },
@@ -559,9 +555,6 @@ router.get('/csv/:id', async (req, res) => {
         { id: 'docsOther1', title: 'Other Document 1' },
         { id: 'docsOther2', title: 'Other Document 2' },
         { id: 'complianceNotes', title: 'Compliance Notes' },
-        { id: 'creditLimit', title: 'Credit Limit' },
-        { id: 'paymentTerms', title: 'Payment Terms' },
-        { id: 'preferredCurrency', title: 'Preferred Currency' },
         { id: 'notes', title: 'Notes' },
         { id: 'consent', title: 'Consent Given' },
         { id: 'submittedAt', title: 'Submitted At' },

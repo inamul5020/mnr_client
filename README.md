@@ -2,7 +2,7 @@
 
 A comprehensive client intake management system for MNR Associates, built with React, Node.js, and PostgreSQL. This system allows staff to collect detailed client information through a structured form and manage client data through an admin dashboard.
 
-## 🎉 **STABLE VERSION - v1.7.0**
+## 🎉 **STABLE VERSION - v1.8.0**
 
 **✅ FULLY WORKING & PRODUCTION READY**
 
@@ -29,6 +29,26 @@ This is the stable, production-ready version that has been tested and verified t
 - **Documentation**: Complete multi-environment deployment guide
 
 ## 🚀 Features
+
+## 🆕 **Recent Enhancements (v1.8.0)**
+
+### Form Structure Updates
+- **Section A Enhancements**: Added "Managed By" dropdown with Owner/Other options and conditional contact name fields
+- **Validation Changes**: Made Phone Mobile, Email, Nature of Business, and TIN optional (removed red asterisks)
+- **Section B Updates**: Removed frequency selections from all tax services for simplified workflow
+- **Section F Removal**: Completely removed Financial Terms section from form and database
+
+### Data Model Changes
+- Added `managedBy` and `managedByContactName` fields to client records
+- Removed `creditLimit`, `paymentTerms`, and `preferredCurrency` fields
+- Updated all exports (Excel/CSV) to include new fields and exclude removed fields
+- Enhanced print view and client detail view with new field displays
+
+### User Experience Improvements
+- Streamlined form submission process with fewer required fields
+- Simplified service selection without frequency complexity
+- Cleaner form layout with conditional field display
+- Updated all display components to reflect new data structure
 
 ## 🆕 **Recent Enhancements (v1.7.0)**
 
