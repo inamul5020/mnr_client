@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    port: 3000, // Frontend development server port
-    strictPort: true, // Always use port 3000 for frontend
+    port: 3020, // Frontend development server port
+    strictPort: true, // Always use port 3020 for frontend
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:3001', // Backend API
+        target: process.env.VITE_API_URL || 'http://localhost:3021', // Backend API
         changeOrigin: true,
         secure: false,
       }
