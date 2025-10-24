@@ -11,6 +11,7 @@ import { SectionD } from '../components/form/SectionD';
 import { SectionE } from '../components/form/SectionE';
 import { FormProgress } from '../components/form/FormProgress';
 import { FormNavigation } from '../components/form/FormNavigation';
+import { FormDebug } from '../components/form/FormDebug';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { Users, ArrowLeft } from 'lucide-react';
 
@@ -229,6 +230,9 @@ export function ClientIntakeForm() {
             )}
           </div>
         </div>
+
+        {/* Debug component - remove in production */}
+        <FormDebug />
 
         {submitError && (
           <ErrorMessage message={submitError} />
