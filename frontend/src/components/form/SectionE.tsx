@@ -19,6 +19,7 @@ export function SectionE({ form, errors }: SectionEProps) {
     setValue('docsVehicleReg', false);
     setValue('docsOther1', 'BOI Certificate');
     setValue('docsOther2', 'Export License');
+    setValue('consent', true);
   };
 
   return (
@@ -154,6 +155,29 @@ export function SectionE({ form, errors }: SectionEProps) {
             placeholder="Any additional compliance-related notes or requirements"
             rows={4}
           />
+        </div>
+
+        {/* Consent Checkbox */}
+        <div className="form-group">
+          <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+            <input
+              {...register('consent')}
+              type="checkbox"
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-1"
+            />
+            <div className="text-sm">
+              <label className="font-medium text-gray-900 cursor-pointer">
+                I consent to the processing of my personal data <span className="text-red-500">*</span>
+              </label>
+              <p className="text-gray-600 mt-1">
+                By checking this box, I confirm that I have read and agree to the data processing terms and conditions. 
+                I understand that my information will be used for client intake and service provision purposes.
+              </p>
+            </div>
+          </div>
+          {errors.consent && (
+            <p className="error-message mt-2">{errors.consent.message}</p>
+          )}
         </div>
       </div>
     </div>
