@@ -72,7 +72,7 @@ const connectWithRetry = async (retries = 10, delay = 5000) => {
 // Middleware
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3003',
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3020',
     credentials: true
 }));
 app.use((0, morgan_1.default)('combined'));
