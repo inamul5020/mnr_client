@@ -8,6 +8,9 @@ export interface Department {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  _count?: {
+    staff: number;
+  };
 }
 
 export interface Role {
@@ -17,6 +20,9 @@ export interface Role {
   description?: string;
   createdAt: Date;
   updatedAt: Date;
+  _count?: {
+    staffRoles: number;
+  };
 }
 
 export interface Staff {

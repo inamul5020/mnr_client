@@ -309,7 +309,7 @@ export function DepartmentManagement() {
               </h3>
               <p className="text-sm text-gray-600 mb-6">
                 Are you sure you want to delete "{deleteConfirm.name}"? This action cannot be undone.
-                {deleteConfirm._count?.staff > 0 && (
+                {deleteConfirm._count?.staff && deleteConfirm._count.staff > 0 && (
                   <span className="block mt-2 text-red-600">
                     This department has {deleteConfirm._count.staff} staff members. 
                     Please reassign them first.
@@ -325,7 +325,7 @@ export function DepartmentManagement() {
                 </button>
                 <button
                   onClick={() => handleDelete(deleteConfirm)}
-                  disabled={deleteConfirm._count?.staff > 0}
+                  disabled={deleteConfirm._count?.staff ? deleteConfirm._count.staff > 0 : false}
                   className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   Delete
