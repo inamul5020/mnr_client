@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    port: 3000, // Development server port (will auto-increment if busy)
-    strictPort: false, // Allow Vite to find next available port
+    port: 3000, // Frontend development server port
+    strictPort: true, // Always use port 3000 for frontend
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:3004', // Backend API
+        target: process.env.VITE_API_URL || 'http://localhost:3001', // Backend API
         changeOrigin: true,
         secure: false,
       }

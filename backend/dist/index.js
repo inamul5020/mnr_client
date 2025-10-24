@@ -26,7 +26,7 @@ const prisma = new client_1.PrismaClient({
         }
     }
 });
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 // Database connection retry logic
 const connectWithRetry = async (retries = 10, delay = 5000) => {
     for (let i = 0; i < retries; i++) {
