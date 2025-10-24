@@ -3,6 +3,8 @@ import { ClientIntakeForm } from './pages/ClientIntakeForm'
 import { Dashboard } from './pages/Dashboard'
 import { ClientList } from './pages/ClientList'
 import { SuccessPage } from './pages/SuccessPage'
+import { DepartmentManagement } from './pages/DepartmentManagement'
+import { RoleManagement } from './pages/RoleManagement'
 import { LoginForm } from './components/LoginForm'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { HealthCheck } from './components/HealthCheck'
@@ -55,6 +57,8 @@ const AuthenticatedLayout = () => {
               <Route path="/" element={<ClientIntakeForm />} />
               <Route path="/admin" element={<Dashboard />} />
               <Route path="/admin/clients" element={<ClientList />} />
+              <Route path="/admin/departments" element={<DepartmentManagement />} />
+              <Route path="/admin/roles" element={<RoleManagement />} />
               <Route path="/success" element={<SuccessPage />} />
             </Routes>
           </div>

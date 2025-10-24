@@ -12,6 +12,9 @@ import exportRoutes from './routes/export';
 import authRoutes from './routes/auth';
 import auditRoutes from './routes/audit';
 import statsRoutes from './routes/stats';
+import departmentRoutes from './routes/department';
+import roleRoutes from './routes/role';
+import staffRoutes from './routes/staff';
 
 // Load environment variables
 dotenv.config();
@@ -98,6 +101,9 @@ app.use('/api/export', exportRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/staff', staffRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

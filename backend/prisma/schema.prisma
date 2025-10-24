@@ -128,6 +128,7 @@ model User {
   
   // Relations
   auditLogs   AuditLog[]
+  staff       Staff?
   
   @@map("users")
 }
@@ -149,6 +150,89 @@ model AuditLog {
   userAgent   String?
   
   @@map("audit_logs")
+}
+
+// Staff Management Models
+model Department {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  staff       Staff[]
+  
+  @@map("departments")
+}
+
+enum StaffRoleType {
+  STAFF
+  SUPERVISOR
+  MANAGER
+  PARTNER
+  HR
+  OFFICE_ADMIN
+}
+
+model Role {
+  id          String        @id @default(cuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  name        String        @unique
+  type        StaffRoleType @unique
+  description String?
+  staffRoles  StaffRole[]
+  
+  @@map("roles")
+}
+
+enum StaffStatus {
+  ACTIVE
+  RESIGNED
+  STUDY_LEAVE
+  INACTIVE
+}
+
+model Staff {
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  
+  // Basic Information
+  employeeId   String      @unique
+  firstName    String
+  lastName     String
+  email        String      @unique
+  phone        String?
+  photoUrl     String?
+  
+  // Employment Details
+  hireDate     DateTime    @default(now())
+  isActive     Boolean     @default(true)
+  status       StaffStatus @default(ACTIVE)
+  resignDate   DateTime?
+  resignReason String?
+  
+  // Relationships
+  departmentId String
+  department   Department  @relation(fields: [departmentId], references: [id])
+  userId       String?     @unique
+  user         User?       @relation(fields: [userId], references: [id])
+  roles        StaffRole[]
+  
+  @@map("staff")
+}
+
+model StaffRole {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  staffId   String
+  roleId    String
+  staff     Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  @@unique([staffId, roleId])
+  @@map("staff_roles")
 }
 
 // Enums for new models

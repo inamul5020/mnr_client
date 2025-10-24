@@ -16,6 +16,9 @@ const export_1 = __importDefault(require("./routes/export"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const audit_1 = __importDefault(require("./routes/audit"));
 const stats_1 = __importDefault(require("./routes/stats"));
+const department_1 = __importDefault(require("./routes/department"));
+const role_1 = __importDefault(require("./routes/role"));
+const staff_1 = __importDefault(require("./routes/staff"));
 // Load environment variables
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -96,6 +99,9 @@ app.use('/api/export', export_1.default);
 app.use('/api/auth', auth_1.default);
 app.use('/api/audit', audit_1.default);
 app.use('/api/stats', stats_1.default);
+app.use('/api/departments', department_1.default);
+app.use('/api/roles', role_1.default);
+app.use('/api/staff', staff_1.default);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);

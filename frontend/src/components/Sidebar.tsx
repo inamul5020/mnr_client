@@ -1,12 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  FileText, 
-  BarChart3, 
-  Users, 
-  LogOut, 
-  User, 
+import {
+  FileText,
+  BarChart3,
+  Users,
+  LogOut,
+  User,
   X,
-  Building2
+  Building2,
+  UserPlus,
+  Building,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -37,6 +40,30 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       href: '/admin/clients',
       icon: Users,
       current: location.pathname === '/admin/clients'
+    },
+    {
+      name: 'Staff Form',
+      href: '/staff/new',
+      icon: UserPlus,
+      current: location.pathname === '/staff/new'
+    },
+    {
+      name: 'Staff List',
+      href: '/staff',
+      icon: Users,
+      current: location.pathname === '/staff'
+    },
+    {
+      name: 'Departments',
+      href: '/admin/departments',
+      icon: Building,
+      current: location.pathname === '/admin/departments'
+    },
+    {
+      name: 'Roles',
+      href: '/admin/roles',
+      icon: Shield,
+      current: location.pathname === '/admin/roles'
     }
   ];
 
