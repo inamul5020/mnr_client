@@ -36,11 +36,19 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const AuthenticatedLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
       <div className="lg:pl-64">
-        <HeaderWithSidebar onMenuClick={() => setIsSidebarOpen(true)} />
+        <HeaderWithSidebar onMenuClick={toggleSidebar} />
         <main className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Routes>

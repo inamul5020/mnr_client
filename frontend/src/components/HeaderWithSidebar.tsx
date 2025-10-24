@@ -12,7 +12,8 @@ export function HeaderWithSidebar({ onMenuClick }: HeaderWithSidebarProps) {
           <div className="flex items-center">
             <button
               onClick={onMenuClick}
-              className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              aria-label="Open sidebar menu"
             >
               <Menu className="h-6 w-6" />
             </button>
