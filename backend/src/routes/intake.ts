@@ -200,7 +200,7 @@ router.put('/:id', validateIntake, authenticateUser, async (req: AuthenticatedRe
     const { id } = req.params;
     const {
       // Section A
-      legalName, tradeName, type, ownerName, address, city, state, zipCode, country,
+      legalName, tradeName, type, managedBy, managedByContactName, ownerName, address, city, state, zipCode, country,
       phoneMobile, phoneLand, email, website, natureOfBusiness, industry, clientPriority,
       
       // Section B - Services & Tax Profile (merged)

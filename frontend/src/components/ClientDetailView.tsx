@@ -1,5 +1,5 @@
 import { ClientIntake } from '../types';
-import { X, User, Building, FileText, Shield, CreditCard, Calendar, Phone, Mail, MapPin, Globe, Printer } from 'lucide-react';
+import { X, User, Building, FileText, Shield, Calendar, Phone, Mail, MapPin, Globe, Printer } from 'lucide-react';
 import { PrintView } from './PrintView';
 import { useState } from 'react';
 

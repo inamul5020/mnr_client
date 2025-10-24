@@ -5,8 +5,7 @@ import {
   SERVICES, 
   DIRECT_TAX_SUBCATEGORIES, 
   INDIRECT_TAX_SUBCATEGORIES, 
-  INCOME_TAX_TYPES,
-  FREQUENCY_OPTIONS
+  INCOME_TAX_TYPES
 } from '../../types';
 
 interface SectionBProps {
@@ -20,7 +19,6 @@ export function SectionB({ form, errors }: SectionBProps) {
   const directTaxSubcategories = watch('directTaxSubcategories') || [];
   const indirectTaxSubcategories = watch('indirectTaxSubcategories') || [];
   const incomeTaxTypes = watch('incomeTaxTypes') || [];
-  const serviceFrequencies = watch('serviceFrequencies') || {};
 
   const fillSampleData = () => {
     setValue('servicesSelected', ['Direct Tax', 'Indirect Tax', 'Accounts']);
@@ -61,9 +59,6 @@ export function SectionB({ form, errors }: SectionBProps) {
     }
   };
 
-  const handleFrequencyChange = (key: string, frequency: string) => {
-    setValue('serviceFrequencies', { ...serviceFrequencies, [key]: frequency });
-  };
 
   const handleIncomeTaxTypeChange = (taxType: string, checked: boolean) => {
     if (checked) {

@@ -42,7 +42,20 @@ const exceljs_1 = __importDefault(require("exceljs"));
 const createCsvWriter = __importStar(require("csv-writer"));
 const router = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
-// GET /api/export/excel-all - Export all clients to Excel
+// Helper function to format tax return years for export
+function formatTaxReturnYears(taxReturnYears) {
+    if (!taxReturnYears || typeof taxReturnYears !== 'object') {
+        return '';
+    }
+    const formattedEntries = Object.entries(taxReturnYears).map(([category, years]) => {
+        if (Array.isArray(years) && years.length > 0) {
+            return `${category}: ${years.join(', ')}`;
+        }
+        return `${category}: No years submitted`;
+    });
+    return formattedEntries.join(' | ');
+}
+// GET /api/export/excel-all - Export all clients to Excel with comprehensive details
 router.get('/excel-all', async (req, res) => {
     try {
         const clientIntakes = await prisma.clientIntake.findMany({
@@ -54,31 +67,143 @@ router.get('/excel-all', async (req, res) => {
             }
         });
         const workbook = new exceljs_1.default.Workbook();
-        const sheet = workbook.addWorksheet('All Client Intakes');
-        // Headers
+        // Create a comprehensive sheet with all client details
+        const sheet = workbook.addWorksheet('All Client Intakes - Comprehensive');
+        // Define comprehensive headers
         sheet.columns = [
             { header: 'Legal Name', key: 'legalName', width: 25 },
+            { header: 'Trade Name', key: 'tradeName', width: 25 },
             { header: 'Type', key: 'type', width: 15 },
-            { header: 'Owner', key: 'ownerName', width: 25 },
+            { header: 'Owner Name', key: 'ownerName', width: 25 },
+            { header: 'Managed By', key: 'managedBy', width: 15 },
+            { header: 'Other Contact Name', key: 'managedByContactName', width: 25 },
+            { header: 'Address', key: 'address', width: 40 },
+            { header: 'City', key: 'city', width: 20 },
+            { header: 'State', key: 'state', width: 20 },
+            { header: 'ZIP Code', key: 'zipCode', width: 15 },
+            { header: 'Country', key: 'country', width: 20 },
+            { header: 'Mobile Phone', key: 'phoneMobile', width: 20 },
+            { header: 'Landline Phone', key: 'phoneLand', width: 20 },
             { header: 'Email', key: 'email', width: 30 },
-            { header: 'Phone', key: 'phoneMobile', width: 20 },
-            { header: 'Services', key: 'servicesSelected', width: 30 },
+            { header: 'Website', key: 'website', width: 30 },
+            { header: 'Nature of Business', key: 'natureOfBusiness', width: 30 },
+            { header: 'Industry', key: 'industry', width: 20 },
+            { header: 'Client Priority', key: 'clientPriority', width: 15 },
+            { header: 'Services Selected', key: 'servicesSelected', width: 40 },
+            { header: 'Service Frequency', key: 'serviceFrequency', width: 20 },
             { header: 'TIN', key: 'tin', width: 15 },
-            { header: 'RAMIS', key: 'ramisStatus', width: 15 },
-            { header: 'Submitted', key: 'submittedAt', width: 20 }
+            { header: 'Tax Types Selected', key: 'taxTypesSelected', width: 30 },
+            { header: 'Tax Return Years', key: 'taxReturnYears', width: 40 },
+            { header: 'Other Registrations', key: 'otherRegistrations', width: 30 },
+            { header: 'Company Secretary', key: 'companySecretary', width: 25 },
+            { header: 'Registration Number', key: 'registrationNumber', width: 20 },
+            { header: 'Incorporation Date', key: 'incorporationDate', width: 20 },
+            { header: 'Annual Revenue', key: 'annualRevenue', width: 20 },
+            { header: 'Employee Count', key: 'employeeCount', width: 15 },
+            { header: 'RAMIS Status', key: 'ramisStatus', width: 15 },
+            { header: 'RAMIS Email', key: 'ramisEmail', width: 30 },
+            { header: 'Business Registration Doc', key: 'docsBusinessReg', width: 20 },
+            { header: 'Deed Copy Doc', key: 'docsDeed', width: 20 },
+            { header: 'Vehicle Registration Doc', key: 'docsVehicleReg', width: 20 },
+            { header: 'Other Document 1', key: 'docsOther1', width: 25 },
+            { header: 'Other Document 2', key: 'docsOther2', width: 25 },
+            { header: 'Compliance Notes', key: 'complianceNotes', width: 30 },
+            { header: 'Notes', key: 'notes', width: 40 },
+            { header: 'Consent Given', key: 'consent', width: 15 },
+            { header: 'Created By', key: 'createdBy', width: 20 },
+            { header: 'Submitted At', key: 'submittedAt', width: 20 },
+            { header: 'Related Party 1 Name', key: 'relatedParty1Name', width: 25 },
+            { header: 'Related Party 1 Relationship', key: 'relatedParty1Relationship', width: 20 },
+            { header: 'Related Party 1 TIN', key: 'relatedParty1Tin', width: 15 },
+            { header: 'Related Party 1 Email', key: 'relatedParty1Email', width: 30 },
+            { header: 'Related Party 1 Phone', key: 'relatedParty1Phone', width: 20 },
+            { header: 'Related Party 2 Name', key: 'relatedParty2Name', width: 25 },
+            { header: 'Related Party 2 Relationship', key: 'relatedParty2Relationship', width: 20 },
+            { header: 'Related Party 2 TIN', key: 'relatedParty2Tin', width: 15 },
+            { header: 'Related Party 2 Email', key: 'relatedParty2Email', width: 30 },
+            { header: 'Related Party 2 Phone', key: 'relatedParty2Phone', width: 20 },
+            { header: 'Related Party 3 Name', key: 'relatedParty3Name', width: 25 },
+            { header: 'Related Party 3 Relationship', key: 'relatedParty3Relationship', width: 20 },
+            { header: 'Related Party 3 TIN', key: 'relatedParty3Tin', width: 15 },
+            { header: 'Related Party 3 Email', key: 'relatedParty3Email', width: 30 },
+            { header: 'Related Party 3 Phone', key: 'relatedParty3Phone', width: 20 },
+            { header: 'Related Party 4 Name', key: 'relatedParty4Name', width: 25 },
+            { header: 'Related Party 4 Relationship', key: 'relatedParty4Relationship', width: 20 },
+            { header: 'Related Party 4 TIN', key: 'relatedParty4Tin', width: 15 },
+            { header: 'Related Party 4 Email', key: 'relatedParty4Email', width: 30 },
+            { header: 'Related Party 4 Phone', key: 'relatedParty4Phone', width: 20 }
         ];
-        // Add data rows
+        // Add data rows with comprehensive information
         clientIntakes.forEach(client => {
+            // Prepare related parties data
+            const relatedParties = client.relatedParties || [];
+            const relatedParty1 = relatedParties[0] || {};
+            const relatedParty2 = relatedParties[1] || {};
+            const relatedParty3 = relatedParties[2] || {};
+            const relatedParty4 = relatedParties[3] || {};
             sheet.addRow({
                 legalName: client.legalName,
+                tradeName: client.tradeName || '',
                 type: client.type,
                 ownerName: client.ownerName,
-                email: client.email,
+                managedBy: client.managedBy || '',
+                managedByContactName: client.managedByContactName || '',
+                address: client.address,
+                city: client.city || '',
+                state: client.state || '',
+                zipCode: client.zipCode || '',
+                country: client.country || '',
                 phoneMobile: client.phoneMobile,
-                servicesSelected: client.servicesSelected.join(', '),
+                phoneLand: client.phoneLand || '',
+                email: client.email,
+                website: client.website || '',
+                natureOfBusiness: client.natureOfBusiness,
+                industry: client.industry || '',
+                clientPriority: client.clientPriority || '',
+                servicesSelected: (client.servicesSelected || []).join(', '),
+                serviceFrequencies: client.serviceFrequencies ? JSON.stringify(client.serviceFrequencies) : '',
                 tin: client.tin || '',
+                incomeTaxTypes: (client.incomeTaxTypes || []).join(', '),
+                taxReturnYears: client.taxReturnYears ? formatTaxReturnYears(client.taxReturnYears) : '',
+                otherRegistrations: client.otherRegistrations || '',
+                companySecretary: client.companySecretary || '',
+                registrationNumber: client.registrationNumber || '',
+                incorporationDate: client.incorporationDate ? client.incorporationDate.toLocaleDateString() : '',
+                annualRevenue: client.annualRevenue ? client.annualRevenue.toString() : '',
+                employeeCount: client.employeeCount ? client.employeeCount.toString() : '',
                 ramisStatus: client.ramisStatus,
-                submittedAt: client.submittedAt.toLocaleDateString()
+                ramisEmail: client.ramisEmail || '',
+                docsBusinessReg: client.docsBusinessReg ? 'Yes' : 'No',
+                docsDeed: client.docsDeed ? 'Yes' : 'No',
+                docsVehicleReg: client.docsVehicleReg ? 'Yes' : 'No',
+                docsOther1: client.docsOther1 || '',
+                docsOther2: client.docsOther2 || '',
+                complianceNotes: client.complianceNotes || '',
+                notes: client.notes || '',
+                consent: client.consent ? 'Yes' : 'No',
+                createdBy: client.createdBy || '',
+                submittedAt: client.submittedAt.toLocaleString(),
+                // Related Parties
+                relatedParty1Name: relatedParty1.name || '',
+                relatedParty1Relationship: relatedParty1.relationship || '',
+                relatedParty1Tin: relatedParty1.tin || '',
+                relatedParty1Email: relatedParty1.email || '',
+                relatedParty1Phone: relatedParty1.phone || '',
+                relatedParty2Name: relatedParty2.name || '',
+                relatedParty2Relationship: relatedParty2.relationship || '',
+                relatedParty2Tin: relatedParty2.tin || '',
+                relatedParty2Email: relatedParty2.email || '',
+                relatedParty2Phone: relatedParty2.phone || '',
+                relatedParty3Name: relatedParty3.name || '',
+                relatedParty3Relationship: relatedParty3.relationship || '',
+                relatedParty3Tin: relatedParty3.tin || '',
+                relatedParty3Email: relatedParty3.email || '',
+                relatedParty3Phone: relatedParty3.phone || '',
+                relatedParty4Name: relatedParty4.name || '',
+                relatedParty4Relationship: relatedParty4.relationship || '',
+                relatedParty4Tin: relatedParty4.tin || '',
+                relatedParty4Email: relatedParty4.email || '',
+                relatedParty4Phone: relatedParty4.phone || ''
             });
         });
         // Style the header row
@@ -88,8 +213,14 @@ router.get('/excel-all', async (req, res) => {
             pattern: 'solid',
             fgColor: { argb: 'FFE6E6FA' }
         };
+        // Auto-fit columns
+        sheet.columns.forEach(column => {
+            if (column.width) {
+                column.width = Math.min(column.width, 50); // Cap at 50 for readability
+            }
+        });
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename="all-client-intakes-${new Date().toISOString().split('T')[0]}.xlsx"`);
+        res.setHeader('Content-Disposition', `attachment; filename="all-client-intakes-comprehensive-${new Date().toISOString().split('T')[0]}.xlsx"`);
         await workbook.xlsx.write(res);
         res.end();
     }
@@ -127,6 +258,10 @@ router.get('/excel/:id', async (req, res) => {
         clientSheet.addRow({ field: 'Trade Name', value: clientIntake.tradeName || '' });
         clientSheet.addRow({ field: 'Type', value: clientIntake.type });
         clientSheet.addRow({ field: 'Owner/Primary Contact', value: clientIntake.ownerName });
+        clientSheet.addRow({ field: 'Managed By', value: clientIntake.managedBy || '' });
+        if (clientIntake.managedBy === 'Other' && clientIntake.managedByContactName) {
+            clientSheet.addRow({ field: 'Other Contact Name', value: clientIntake.managedByContactName });
+        }
         clientSheet.addRow({ field: 'Address', value: clientIntake.address });
         clientSheet.addRow({ field: 'City', value: clientIntake.city || '' });
         clientSheet.addRow({ field: 'State', value: clientIntake.state || '' });
@@ -163,10 +298,6 @@ router.get('/excel/:id', async (req, res) => {
         clientSheet.addRow({ field: 'Other Document 1', value: clientIntake.docsOther1 || '' });
         clientSheet.addRow({ field: 'Other Document 2', value: clientIntake.docsOther2 || '' });
         clientSheet.addRow({ field: 'Compliance Notes', value: clientIntake.complianceNotes || '' });
-        // Section F - Financial Terms
-        clientSheet.addRow({ field: 'Credit Limit', value: clientIntake.creditLimit?.toString() || '' });
-        clientSheet.addRow({ field: 'Payment Terms', value: clientIntake.paymentTerms || '' });
-        clientSheet.addRow({ field: 'Preferred Currency', value: clientIntake.preferredCurrency || '' });
         // Metadata
         clientSheet.addRow({ field: 'Notes', value: clientIntake.notes || '' });
         clientSheet.addRow({ field: 'Consent Given', value: clientIntake.consent ? 'Yes' : 'No' });
@@ -221,7 +352,7 @@ router.get('/excel/:id', async (req, res) => {
         });
     }
 });
-// GET /api/export/csv-all - Export all clients to CSV
+// GET /api/export/csv-all - Export all clients to CSV with comprehensive details
 router.get('/csv-all', async (req, res) => {
     try {
         const clientIntakes = await prisma.clientIntake.findMany({
@@ -233,31 +364,120 @@ router.get('/csv-all', async (req, res) => {
             }
         });
         const csvWriter = createCsvWriter.createObjectCsvWriter({
-            path: 'temp-all-clients-export.csv',
+            path: 'temp-all-clients-comprehensive-export.csv',
             header: [
                 { id: 'legalName', title: 'Legal Name' },
+                { id: 'tradeName', title: 'Trade Name' },
                 { id: 'type', title: 'Type' },
                 { id: 'ownerName', title: 'Owner Name' },
-                { id: 'email', title: 'Email' },
+                { id: 'managedBy', title: 'Managed By' },
+                { id: 'managedByContactName', title: 'Other Contact Name' },
+                { id: 'address', title: 'Address' },
+                { id: 'city', title: 'City' },
+                { id: 'state', title: 'State' },
+                { id: 'zipCode', title: 'ZIP Code' },
+                { id: 'country', title: 'Country' },
                 { id: 'phoneMobile', title: 'Mobile Phone' },
+                { id: 'phoneLand', title: 'Landline Phone' },
+                { id: 'email', title: 'Email' },
+                { id: 'website', title: 'Website' },
+                { id: 'natureOfBusiness', title: 'Nature of Business' },
+                { id: 'industry', title: 'Industry' },
+                { id: 'clientPriority', title: 'Client Priority' },
                 { id: 'servicesSelected', title: 'Services Selected' },
+                { id: 'serviceFrequency', title: 'Service Frequency' },
                 { id: 'tin', title: 'TIN' },
+                { id: 'taxTypesSelected', title: 'Tax Types Selected' },
+                { id: 'taxReturnYears', title: 'Tax Return Years' },
+                { id: 'otherRegistrations', title: 'Other Registrations' },
+                { id: 'companySecretary', title: 'Company Secretary' },
+                { id: 'registrationNumber', title: 'Registration Number' },
+                { id: 'incorporationDate', title: 'Incorporation Date' },
+                { id: 'annualRevenue', title: 'Annual Revenue' },
+                { id: 'employeeCount', title: 'Employee Count' },
                 { id: 'ramisStatus', title: 'RAMIS Status' },
-                { id: 'submittedAt', title: 'Submitted At' }
+                { id: 'ramisEmail', title: 'RAMIS Email' },
+                { id: 'docsBusinessReg', title: 'Business Registration Doc' },
+                { id: 'docsDeed', title: 'Deed Copy Doc' },
+                { id: 'docsVehicleReg', title: 'Vehicle Registration Doc' },
+                { id: 'docsOther1', title: 'Other Document 1' },
+                { id: 'docsOther2', title: 'Other Document 2' },
+                { id: 'complianceNotes', title: 'Compliance Notes' },
+                { id: 'notes', title: 'Notes' },
+                { id: 'consent', title: 'Consent Given' },
+                { id: 'createdBy', title: 'Created By' },
+                { id: 'submittedAt', title: 'Submitted At' },
+                // Related parties headers
+                { id: 'relatedParty1Name', title: 'Related Party 1 Name' },
+                { id: 'relatedParty1Relationship', title: 'Related Party 1 Relationship' },
+                { id: 'relatedParty1Tin', title: 'Related Party 1 TIN' },
+                { id: 'relatedParty1Email', title: 'Related Party 1 Email' },
+                { id: 'relatedParty1Phone', title: 'Related Party 1 Phone' },
+                { id: 'relatedParty2Name', title: 'Related Party 2 Name' },
+                { id: 'relatedParty2Relationship', title: 'Related Party 2 Relationship' },
+                { id: 'relatedParty2Tin', title: 'Related Party 2 TIN' },
+                { id: 'relatedParty2Email', title: 'Related Party 2 Email' },
+                { id: 'relatedParty2Phone', title: 'Related Party 2 Phone' },
+                { id: 'relatedParty3Name', title: 'Related Party 3 Name' },
+                { id: 'relatedParty3Relationship', title: 'Related Party 3 Relationship' },
+                { id: 'relatedParty3Tin', title: 'Related Party 3 TIN' },
+                { id: 'relatedParty3Email', title: 'Related Party 3 Email' },
+                { id: 'relatedParty3Phone', title: 'Related Party 3 Phone' },
+                { id: 'relatedParty4Name', title: 'Related Party 4 Name' },
+                { id: 'relatedParty4Relationship', title: 'Related Party 4 Relationship' },
+                { id: 'relatedParty4Tin', title: 'Related Party 4 TIN' },
+                { id: 'relatedParty4Email', title: 'Related Party 4 Email' },
+                { id: 'relatedParty4Phone', title: 'Related Party 4 Phone' }
             ]
         });
-        const csvData = clientIntakes.map(client => ({
-            ...client,
-            servicesSelected: client.servicesSelected.join(', '),
-            submittedAt: client.submittedAt.toLocaleDateString()
-        }));
+        const csvData = clientIntakes.map(client => {
+            // Prepare related parties data
+            const relatedParties = client.relatedParties || [];
+            const relatedParty1 = relatedParties[0] || {};
+            const relatedParty2 = relatedParties[1] || {};
+            const relatedParty3 = relatedParties[2] || {};
+            const relatedParty4 = relatedParties[3] || {};
+            return {
+                ...client,
+                servicesSelected: (client.servicesSelected || []).join(', '),
+                incomeTaxTypes: (client.incomeTaxTypes || []).join(', '),
+                taxReturnYears: client.taxReturnYears ? formatTaxReturnYears(client.taxReturnYears) : '',
+                incorporationDate: client.incorporationDate?.toLocaleDateString() || '',
+                submittedAt: client.submittedAt.toLocaleString(),
+                docsBusinessReg: client.docsBusinessReg ? 'Yes' : 'No',
+                docsDeed: client.docsDeed ? 'Yes' : 'No',
+                docsVehicleReg: client.docsVehicleReg ? 'Yes' : 'No',
+                consent: client.consent ? 'Yes' : 'No',
+                // Related parties data
+                relatedParty1Name: relatedParty1.name || '',
+                relatedParty1Relationship: relatedParty1.relationship || '',
+                relatedParty1Tin: relatedParty1.tin || '',
+                relatedParty1Email: relatedParty1.email || '',
+                relatedParty1Phone: relatedParty1.phone || '',
+                relatedParty2Name: relatedParty2.name || '',
+                relatedParty2Relationship: relatedParty2.relationship || '',
+                relatedParty2Tin: relatedParty2.tin || '',
+                relatedParty2Email: relatedParty2.email || '',
+                relatedParty2Phone: relatedParty2.phone || '',
+                relatedParty3Name: relatedParty3.name || '',
+                relatedParty3Relationship: relatedParty3.relationship || '',
+                relatedParty3Tin: relatedParty3.tin || '',
+                relatedParty3Email: relatedParty3.email || '',
+                relatedParty3Phone: relatedParty3.phone || '',
+                relatedParty4Name: relatedParty4.name || '',
+                relatedParty4Relationship: relatedParty4.relationship || '',
+                relatedParty4Tin: relatedParty4.tin || '',
+                relatedParty4Email: relatedParty4.email || '',
+                relatedParty4Phone: relatedParty4.phone || ''
+            };
+        });
         await csvWriter.writeRecords(csvData);
         res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', `attachment; filename="all-client-intakes-${new Date().toISOString().split('T')[0]}.csv"`);
+        res.setHeader('Content-Disposition', `attachment; filename="all-client-intakes-comprehensive-${new Date().toISOString().split('T')[0]}.csv"`);
         const fs = require('fs');
-        const csvContent = fs.readFileSync('temp-all-clients-export.csv');
+        const csvContent = fs.readFileSync('temp-all-clients-comprehensive-export.csv');
         res.send(csvContent);
-        fs.unlinkSync('temp-all-clients-export.csv');
+        fs.unlinkSync('temp-all-clients-comprehensive-export.csv');
     }
     catch (error) {
         console.error('Error exporting all to CSV:', error);
@@ -295,6 +515,8 @@ router.get('/csv/:id', async (req, res) => {
                 { id: 'tradeName', title: 'Trade Name' },
                 { id: 'type', title: 'Type' },
                 { id: 'ownerName', title: 'Owner Name' },
+                { id: 'managedBy', title: 'Managed By' },
+                { id: 'managedByContactName', title: 'Other Contact Name' },
                 { id: 'address', title: 'Address' },
                 { id: 'city', title: 'City' },
                 { id: 'state', title: 'State' },
@@ -328,9 +550,6 @@ router.get('/csv/:id', async (req, res) => {
                 { id: 'docsOther1', title: 'Other Document 1' },
                 { id: 'docsOther2', title: 'Other Document 2' },
                 { id: 'complianceNotes', title: 'Compliance Notes' },
-                { id: 'creditLimit', title: 'Credit Limit' },
-                { id: 'paymentTerms', title: 'Payment Terms' },
-                { id: 'preferredCurrency', title: 'Preferred Currency' },
                 { id: 'notes', title: 'Notes' },
                 { id: 'consent', title: 'Consent Given' },
                 { id: 'submittedAt', title: 'Submitted At' },

@@ -15,6 +15,7 @@ const intake_1 = __importDefault(require("./routes/intake"));
 const export_1 = __importDefault(require("./routes/export"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const audit_1 = __importDefault(require("./routes/audit"));
+const stats_1 = __importDefault(require("./routes/stats"));
 // Load environment variables
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -68,7 +69,7 @@ const connectWithRetry = async (retries = 10, delay = 5000) => {
 // Middleware
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3003',
     credentials: true
 }));
 app.use((0, morgan_1.default)('combined'));
@@ -94,6 +95,7 @@ app.use('/api/intake', intake_1.default);
 app.use('/api/export', export_1.default);
 app.use('/api/auth', auth_1.default);
 app.use('/api/audit', audit_1.default);
+app.use('/api/stats', stats_1.default);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);

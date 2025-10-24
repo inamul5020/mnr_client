@@ -1,0 +1,48 @@
+# Coolify Fresh Build - Forces cache busting
+FROM node:20-alpine
+
+# Add build timestamp to bust cache
+ARG BUILD_TIMESTAMP
+ENV BUILD_TIMESTAMP=${BUILD_TIMESTAMP}
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache git
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies (no cache)
+RUN npm ci --only=production --no-cache
+
+# Copy source code
+COPY src/ ./src/
+COPY prisma/ ./prisma/
+COPY tsconfig.json ./
+
+# Install dev dependencies for build
+RUN npm install --only=development
+
+# Build the application
+RUN npm run build
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Remove dev dependencies
+RUN npm prune --production
+
+# Expose port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Start the application
+CMD ["node", "dist/index.js"]

@@ -16,9 +16,9 @@ const validateIntake = [
     (0, express_validator_1.body)('type').isIn(['INDIVIDUAL', 'PARTNERSHIP', 'COMPANY', 'NGO', 'OTHER']).withMessage('Invalid client type'),
     (0, express_validator_1.body)('ownerName').notEmpty().withMessage('Owner/Primary contact name is required'),
     (0, express_validator_1.body)('address').notEmpty().withMessage('Business address is required'),
-    (0, express_validator_1.body)('phoneMobile').notEmpty().withMessage('Mobile phone is required'),
-    (0, express_validator_1.body)('email').isEmail().withMessage('Valid email is required'),
-    (0, express_validator_1.body)('natureOfBusiness').notEmpty().withMessage('Nature of business is required'),
+    (0, express_validator_1.body)('phoneMobile').optional(),
+    (0, express_validator_1.body)('email').optional().isEmail().withMessage('Valid email format required'),
+    (0, express_validator_1.body)('natureOfBusiness').optional(),
     // Section B - Services
     (0, express_validator_1.body)('servicesSelected').isArray({ min: 1 }).withMessage('At least one service must be selected'),
     // Section E - RAMIS
@@ -46,27 +46,17 @@ router.post('/', validateIntake, auth_1.authenticateUser, async (req, res) => {
         }
         const { 
         // Section A
-        legalName, tradeName, type, ownerName, address, city, state, zipCode, country, phoneMobile, phoneLand, email, website, natureOfBusiness, industry, clientPriority, 
+        legalName, tradeName, type, managedBy, managedByContactName, ownerName, address, city, state, zipCode, country, phoneMobile, phoneLand, email, website, natureOfBusiness, industry, clientPriority, 
         // Section B - Services & Tax Profile (merged)
         servicesSelected, directTaxSubcategories, indirectTaxSubcategories, incomeTaxTypes, serviceFrequencies, taxReturnYears, tin, otherRegistrations, 
         // Section D
         companySecretary, registrationNumber, incorporationDate, annualRevenue, employeeCount, 
         // Section E
         ramisStatus, ramisEmail, docsBusinessReg, docsDeed, docsVehicleReg, docsOther1, docsOther2, complianceNotes, 
-        // Section F
-        creditLimit, paymentTerms, preferredCurrency, 
         // Metadata
         notes, consent, createdBy, 
         // Related parties
         relatedParties } = req.body;
-        // Additional validation
-        if (servicesSelected.includes('Direct Tax') || servicesSelected.includes('Indirect Tax')) {
-            if (!tin) {
-                return res.status(400).json({
-                    error: 'TIN is required when tax services are selected'
-                });
-            }
-        }
         // Validate subcategories
         if (servicesSelected.includes('Direct Tax')) {
             if (!directTaxSubcategories || directTaxSubcategories.length === 0) {
@@ -94,6 +84,8 @@ router.post('/', validateIntake, auth_1.authenticateUser, async (req, res) => {
                 legalName,
                 tradeName,
                 type,
+                managedBy,
+                managedByContactName,
                 ownerName,
                 address,
                 city,
@@ -131,10 +123,6 @@ router.post('/', validateIntake, auth_1.authenticateUser, async (req, res) => {
                 docsOther1,
                 docsOther2,
                 complianceNotes,
-                // Section F
-                creditLimit: creditLimit ? parseFloat(creditLimit) : null,
-                paymentTerms,
-                preferredCurrency: preferredCurrency || 'USD',
                 // Metadata
                 notes,
                 consent,
@@ -180,7 +168,7 @@ router.put('/:id', validateIntake, auth_1.authenticateUser, async (req, res) => 
         const { id } = req.params;
         const { 
         // Section A
-        legalName, tradeName, type, ownerName, address, city, state, zipCode, country, phoneMobile, phoneLand, email, website, natureOfBusiness, industry, clientPriority, 
+        legalName, tradeName, type, managedBy, managedByContactName, ownerName, address, city, state, zipCode, country, phoneMobile, phoneLand, email, website, natureOfBusiness, industry, clientPriority, 
         // Section B - Services & Tax Profile (merged)
         servicesSelected, directTaxSubcategories, indirectTaxSubcategories, incomeTaxTypes, serviceFrequencies, taxReturnYears, tin, otherRegistrations, 
         // Section D
@@ -226,6 +214,8 @@ router.put('/:id', validateIntake, auth_1.authenticateUser, async (req, res) => 
                 legalName,
                 tradeName,
                 type,
+                managedBy,
+                managedByContactName,
                 ownerName,
                 address,
                 city,
@@ -262,10 +252,6 @@ router.put('/:id', validateIntake, auth_1.authenticateUser, async (req, res) => 
                 docsOther1,
                 docsOther2,
                 complianceNotes,
-                // Section F
-                creditLimit: creditLimit ? parseFloat(creditLimit) : null,
-                paymentTerms,
-                preferredCurrency: preferredCurrency || 'USD',
                 // Metadata
                 notes,
                 consent,

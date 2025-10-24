@@ -48,6 +48,11 @@ export interface ClientIntake {
   docsOther2?: string;
   complianceNotes?: string;
   
+  // Financial Details
+  creditLimit?: number;
+  paymentTerms?: string;
+  preferredCurrency?: string;
+  
   // Metadata
   notes?: string;
   consent: boolean;
