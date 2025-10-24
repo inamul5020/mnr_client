@@ -1,8 +1,12 @@
-import { useFormContext } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { FormData } from '../../pages/ClientIntakeForm';
 
-export function FormDebug() {
-  const { formState: { errors, isValid }, watch } = useFormContext<FormData>();
+interface FormDebugProps {
+  form: UseFormReturn<FormData>;
+}
+
+export function FormDebug({ form }: FormDebugProps) {
+  const { formState: { errors, isValid }, watch } = form;
   
   const formData = watch();
   

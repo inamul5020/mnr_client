@@ -232,7 +232,7 @@ export function ClientIntakeForm() {
         </div>
 
         {/* Debug component - remove in production */}
-        <FormDebug />
+        <FormDebug form={form} />
 
         {submitError && (
           <ErrorMessage message={submitError} />
